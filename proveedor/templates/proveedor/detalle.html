@@ -57,9 +57,65 @@
 
         <hr class="divider">
 
+        <!-- Productos asignados -->
+        <div class="seccion-titulo"><i class="fas fa-box"></i> Productos del Proveedor</div>
+
+        {% if productos_asignados %}
+        <div style="margin-bottom:16px;">
+            {% for pp in productos_asignados %}
+            <div style="display:flex; justify-content:space-between; align-items:center;
+                padding:8px 12px; border:1px solid #d4edda; border-radius:8px;
+                margin-bottom:6px; background:#f9fff9;">
+                <div>
+                    <span style="font-weight:600; font-size:0.9rem; color:#2e3b33;">{{ pp.producto.nombre }}</span>
+                    {% if pp.precio_proveedor %}
+                    <span style="font-size:0.78rem; color:#28a745; margin-left:8px;">
+                        ${{ pp.precio_proveedor|floatformat:0 }}
+                    </span>
+                    {% endif %}
+                </div>
+                <a href="{% url 'desasignar_producto_proveedor' proveedor.id_proveedor pp.id %}"
+                    onclick="return confirm('¿Quitar este producto del proveedor?');" style="background:#dc3545; color:white; padding:3px 10px; border-radius:5px;
+                  font-size:0.75rem; text-decoration:none;">
+                    <i class="fas fa-times"></i> Quitar
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p style="color:#6c757d; font-size:0.85rem; text-align:center; margin-bottom:16px;">
+            No hay productos asignados aún.
+        </p>
+        {% endif %}
+
+        <!-- Asignar nuevo producto -->
+        {% if productos_disponibles %}
+        <form method="POST" action="{% url 'asignar_producto_proveedor' proveedor.id_proveedor %}">
+            {% csrf_token %}
+            <div style="display:flex; gap:8px; align-items:center; margin-bottom:16px;">
+                <select name="id_producto" class="field-input" style="flex:2;">
+                    <option value="">Seleccionar producto...</option>
+                    {% for p in productos_disponibles %}
+                    <option value="{{ p.id_producto }}">{{ p.nombre }}</option>
+                    {% endfor %}
+                </select>
+                <input type="number" name="precio_proveedor" placeholder="Precio (opcional)" class="field-input"
+                    style="flex:1;" min="0" step="1">
+                <button type="submit" style="background:#28a745; color:white; border:none; padding:10px 16px;
+                   border-radius:8px; font-size:0.82rem; font-weight:600; cursor:pointer;
+                   white-space:nowrap;">
+                    <i class="fas fa-plus"></i> Asignar
+                </button>
+            </div>
+        </form>
+        {% endif %}
+
+        <hr class="divider">
+
         <!-- Botón crear OC -->
         {% if proveedor.es_activo %}
-        <a href="#" class="btn-guardar" style="text-decoration:none; text-align:center; display:block;">
+        <a href="{% url 'crear_orden' %}?proveedor={{ proveedor.id_proveedor }}" class="btn-guardar"
+            style="text-decoration:none; text-align:center; display:block;">
             <i class="fas fa-file-invoice me-2"></i> CREAR ORDEN DE COMPRA
         </a>
         {% else %}

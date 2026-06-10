@@ -33,34 +33,34 @@
                 <div style="display:flex; align-items:center; gap:10px;">
                     {% if pedido.metodopago == 'nequi' %}
                     <span style="background:#f3e8ff; color:#2d1b69; padding:4px 10px;
-                                 border-radius:20px; font-size:0.75rem; font-weight:600;">
+                                border-radius:20px; font-size:0.75rem; font-weight:600;">
                         <i class="fas fa-mobile-alt"></i> Nequi
                     </span>
                     {% elif pedido.metodopago == 'daviplata' %}
                     <span style="background:#fff0f3; color:#e40046; padding:4px 10px;
-                                 border-radius:20px; font-size:0.75rem; font-weight:600;">
+                                border-radius:20px; font-size:0.75rem; font-weight:600;">
                         <i class="fas fa-mobile-alt"></i> Daviplata
                     </span>
                     {% else %}
                     <span style="background:#f0fff4; color:#155724; padding:4px 10px;
-                                 border-radius:20px; font-size:0.75rem; font-weight:600;">
+                                border-radius:20px; font-size:0.75rem; font-weight:600;">
                         <i class="fas fa-money-bill-wave"></i> Efectivo
                     </span>
                     {% endif %}
 
                     {% if pedido.estado == 'pendiente_pago' %}
                     <span style="background:#fff3cd; color:#856404; padding:4px 12px;
-                                 border-radius:20px; font-size:0.78rem; font-weight:600;">
+                                border-radius:20px; font-size:0.78rem; font-weight:600;">
                         <i class="fas fa-clock"></i> Pendiente de pago
                     </span>
                     {% elif pedido.estado == 'pendiente_entrega' %}
                     <span style="background:#d1ecf1; color:#0c5460; padding:4px 12px;
-                                 border-radius:20px; font-size:0.78rem; font-weight:600;">
+                                border-radius:20px; font-size:0.78rem; font-weight:600;">
                         <i class="fas fa-box"></i> Listo para recoger
                     </span>
                     {% elif pedido.estado == 'entregado' %}
                     <span style="background:#d4edda; color:#155724; padding:4px 12px;
-                                 border-radius:20px; font-size:0.78rem; font-weight:600;">
+                                border-radius:20px; font-size:0.78rem; font-weight:600;">
                         <i class="fas fa-check-circle"></i> Entregado
                     </span>
                     {% endif %}

@@ -1,0 +1,184 @@
+{% extends 'gestion/dashboard.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'ordencompra/css/styles.css' %}">
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <h4 class="page-title"><i class="fas fa-file-invoice me-2"></i>Órdenes de Compra</h4>
+
+    <div class="card-sena">
+
+        {% if messages %}
+        {% for message in messages %}
+        {% if message.tags == 'success' %}
+        <div class="alerta-exito"><i class="fas fa-check-circle"></i> {{ message }}</div>
+        {% else %}
+        <div class="alerta-error"><i class="fas fa-exclamation-triangle"></i> {{ message }}</div>
+        {% endif %}
+        {% endfor %}
+        {% endif %}
+
+        <!-- Cards resumen -->
+        <div style="display:flex; gap:12px; flex-wrap:wrap; margin-bottom:1.5rem;">
+            <div
+                style="flex:1; min-width:160px; display:flex; align-items:center; gap:14px; background:white; border-radius:10px; border:1px solid #d4edda; border-left:5px solid #ffc107; box-shadow:0 2px 8px rgba(40,167,69,0.07); padding:14px 18px;">
+                <div
+                    style="width:48px;height:48px;border-radius:50%;background:#fff8e1;display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;">
+                    <i class="fas fa-clock" style="color:#ffc107;"></i>
+                </div>
+                <div>
+                    <div style="font-size:0.78rem;color:#6c757d;font-weight:500;">Pendientes</div>
+                    <div style="font-size:1.5rem;font-weight:700;color:#ffc107;line-height:1;">{{ total_pendientes }}
+                    </div>
+                </div>
+            </div>
+            <div
+                style="flex:1; min-width:160px; display:flex; align-items:center; gap:14px; background:white; border-radius:10px; border:1px solid #d4edda; border-left:5px solid #17a2b8; box-shadow:0 2px 8px rgba(40,167,69,0.07); padding:14px 18px;">
+                <div
+                    style="width:48px;height:48px;border-radius:50%;background:#e3f8fb;display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;">
+                    <i class="fas fa-paper-plane" style="color:#17a2b8;"></i>
+                </div>
+                <div>
+                    <div style="font-size:0.78rem;color:#6c757d;font-weight:500;">Enviadas</div>
+                    <div style="font-size:1.5rem;font-weight:700;color:#17a2b8;line-height:1;">{{ total_enviadas }}
+                    </div>
+                </div>
+            </div>
+            <div
+                style="flex:1; min-width:160px; display:flex; align-items:center; gap:14px; background:white; border-radius:10px; border:1px solid #d4edda; border-left:5px solid #28a745; box-shadow:0 2px 8px rgba(40,167,69,0.07); padding:14px 18px;">
+                <div
+                    style="width:48px;height:48px;border-radius:50%;background:#e9f7ef;display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;">
+                    <i class="fas fa-box" style="color:#28a745;"></i>
+                </div>
+                <div>
+                    <div style="font-size:0.78rem;color:#6c757d;font-weight:500;">Recibidas</div>
+                    <div style="font-size:1.5rem;font-weight:700;color:#28a745;line-height:1;">{{ total_recibidas }}
+                    </div>
+                </div>
+            </div>
+            <div
+                style="flex:1; min-width:160px; display:flex; align-items:center; gap:14px; background:white; border-radius:10px; border:1px solid #d4edda; border-left:5px solid #6c757d; box-shadow:0 2px 8px rgba(40,167,69,0.07); padding:14px 18px;">
+                <div
+                    style="width:48px;height:48px;border-radius:50%;background:#f4f4f4;display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;">
+                    <i class="fas fa-lock" style="color:#6c757d;"></i>
+                </div>
+                <div>
+                    <div style="font-size:0.78rem;color:#6c757d;font-weight:500;">Cerradas</div>
+                    <div style="font-size:1.5rem;font-weight:700;color:#6c757d;line-height:1;">{{ total_cerradas }}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Toolbar -->
+        <div class="toolbar">
+            <div class="toolbar-left"></div>
+            <span class="title-list">Lista de Órdenes de Compra</span>
+            <div class="d-flex align-items-center gap-3">
+                <div class="search-wrapper">
+                    <label><i class="fas fa-search"></i> Buscar:</label>
+                    <input type="text" id="searchOrdenes" placeholder="Buscar...">
+                </div>
+                <a href="{% url 'crear_orden' %}" class="btn-nuevo">
+                    <i class="fas fa-plus-circle"></i> Nueva Orden
+                </a>
+            </div>
+        </div>
+
+        <!-- Filtro estado -->
+        <form method="GET" action="">
+            <div class="filtros-wrapper">
+                <select name="estado" class="filtro-select">
+                    <option value="">Todos los estados</option>
+                    <option value="pendiente" {% if filtro_estado == 'pendiente' %}selected{% endif %}>Pendiente</option>
+                    <option value="enviada" {% if filtro_estado == 'enviada' %}selected{% endif %}>Enviada</option>
+                    <option value="recibida" {% if filtro_estado == 'recibida' %}selected{% endif %}>Recibida</option>
+                    <option value="cerrada" {% if filtro_estado == 'cerrada' %}selected{% endif %}>Cerrada</option>
+                </select>
+                    <select name="proveedor" class="filtro-select">
+                        <option value="">Todos los proveedores</option>
+                            {% for p in proveedores %}
+                            <option value="{{ p.id_proveedor }}" {% if filtro_proveedor == p.id_proveedor|stringformat:"s" %}selected{% endif %}>
+                            {{ p.nombre }}
+                            </option>
+                            {% endfor %}
+                    </select>
+                <button type="submit" class="btn-filtrar"><i class="fas fa-filter"></i> Filtrar</button>
+                <a href="{% url 'lista_ordenes' %}" class="btn-limpiar"><i class="fas fa-times"></i> Limpiar</a>
+            </div>
+        </form>
+
+        <div class="table-responsive w-100">
+            <table id="tablaOrdenes" class="table table-sm table-hover table-bordered">
+                <thead class="table-sena-header">
+                    <tr>
+                        <th>ID</th>
+                        <th>Proveedor</th>
+                        <th>Fecha</th>
+                        <th>Creada por</th>
+                        <th>Estado</th>
+                        <th>Total</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for orden in ordenes %}
+                    <tr>
+                        <td class="text-center fw-bold">#{{ orden.id_orden }}</td>
+                        <td>{{ orden.id_proveedor.nombre }}</td>
+                        <td class="text-center">{{ orden.fecha|date:"d/m/Y" }}</td>
+                        <td class="text-center">{{ orden.id_usuario.nombre }} {{ orden.id_usuario.apellido }}</td>
+                        <td class="text-center">
+                            {% if orden.estado == 'pendiente' %}
+                            <span class="badge-pendiente"><i class="fas fa-clock"></i> Pendiente</span>
+                            {% elif orden.estado == 'enviada' %}
+                            <span class="badge-enviada"><i class="fas fa-paper-plane"></i> Enviada</span>
+                            {% elif orden.estado == 'recibida' %}
+                            <span class="badge-recibida"><i class="fas fa-box"></i> Recibida</span>
+                            {% elif orden.estado == 'cerrada' %}
+                            <span class="badge-cerrada"><i class="fas fa-lock"></i> Cerrada</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-center fw-bold" style="color:#28a745;">${{ orden.total|floatformat:0 }}</td>
+                        <td class="text-center">
+                            <a href="{% url 'detalle_orden' orden.id_orden %}" class="btn-accion-ver">
+                                <i class="fas fa-eye"></i> Ver
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="text-center py-4 text-muted">No hay órdenes de compra.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.7.0.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+<script>
+    $(document).ready(function () {
+        var table = $('#tablaOrdenes').DataTable({
+            "pageLength": 10,
+            "order": [[0, "desc"]],
+            "language": {
+                "info": "Mostrando _START_ a _END_ de _TOTAL_ registros",
+                "infoEmpty": "Sin registros",
+                "paginate": { "previous": "Anterior", "next": "Siguiente" }
+            }
+        });
+        $('#searchOrdenes').on('keyup', function () {
+            table.search(this.value).draw();
+        });
+    });
+</script>
+{% endblock %}

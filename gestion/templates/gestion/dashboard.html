@@ -238,7 +238,7 @@
             <a href="{% url 'lista_proveedores' %}"><i class="fas fa-truck"></i> Proveedores</a>
             <a href="{% url 'usuarios_lista' %}"><i class="fas fa-users"></i> Usuarios</a>
             <a href="{% url 'vista_vendedor' %}"><i class="fas fa-store"></i> Entregas</a>
-            <a href="#"><i class="fas fa-file-invoice"></i> O. Compra</a>
+            <a href="{% url 'lista_ordenes' %}"><i class="fas fa-file-invoice"></i> O. Compra</a>
             {% endif %}
 
             {% if rol_usuario == 'Vendedor' %}

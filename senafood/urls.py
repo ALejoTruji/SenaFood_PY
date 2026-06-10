@@ -14,4 +14,5 @@ urlpatterns = [
     path('inventario/', include('inventario.urls')),#ruta inventario
     path('catalogo/', include('catalogo.urls')),
     path('ventas/', include('ventas.urls')),
+    path('ordencompra/', include('ordencompra.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -125,16 +125,63 @@ def eliminar_proveedor_view(request, id):
     proveedor.save()
     return redirect('lista_proveedores')
 
+from producto.models import ProveedorProducto
+from gestion.models import Producto
+
 def detalle_proveedor_view(request, id):
     usuario, rol = get_usuario_session(request)
     if not usuario or rol != 'Administrador':
         return redirect('login')
 
     proveedor = get_object_or_404(Proveedor, id_proveedor=id)
+    
+    # Productos asignados al proveedor
+    productos_asignados = ProveedorProducto.objects.filter(
+        proveedor=proveedor
+    ).select_related('producto')
+
+    # Productos disponibles para asignar
+    ids_asignados = productos_asignados.values_list('producto_id', flat=True)
+    productos_disponibles = Producto.objects.filter(
+        estado='activo', es_activo=True
+    ).exclude(id_producto__in=ids_asignados).order_by('nombre')
 
     return render(request, 'proveedor/detalle.html', {
-        'proveedor': proveedor,
+        'proveedor':            proveedor,
+        'productos_asignados':  productos_asignados,
+        'productos_disponibles': productos_disponibles,
     })
+
+
+def asignar_producto_proveedor(request, id):
+    usuario, rol = get_usuario_session(request)
+    if not usuario or rol != 'Administrador':
+        return redirect('login')
+
+    if request.method == 'POST':
+        proveedor    = get_object_or_404(Proveedor, id_proveedor=id)
+        id_producto  = request.POST.get('id_producto')
+        precio       = request.POST.get('precio_proveedor')
+
+        if id_producto:
+            producto = get_object_or_404(Producto, pk=id_producto)
+            ProveedorProducto.objects.get_or_create(
+                proveedor = proveedor,
+                producto  = producto,
+                defaults  = {'precio_proveedor': precio or None}
+            )
+
+    return redirect('detalle_proveedor', id=id)
+
+
+def desasignar_producto_proveedor(request, id, id_pp):
+    usuario, rol = get_usuario_session(request)
+    if not usuario or rol != 'Administrador':
+        return redirect('login')
+
+    pp = get_object_or_404(ProveedorProducto, pk=id_pp, proveedor__id_proveedor=id)
+    pp.delete()
+    return redirect('detalle_proveedor', id=id)
 
 def exportar_excel_proveedores(request):
     usuario, rol = get_usuario_session(request)

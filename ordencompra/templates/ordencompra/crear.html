@@ -1,0 +1,226 @@
+{% extends 'gestion/dashboard.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'ordencompra/css/styles.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4 px-4">
+
+    <div style="display:flex; align-items:center; gap:12px; margin-bottom:1.5rem;">
+        <a href="{% url 'lista_ordenes' %}" style="color:#28a745; font-size:1.2rem;">
+            <i class="fas fa-arrow-left"></i>
+        </a>
+        <h4 class="page-title mb-0"><i class="fas fa-plus me-2"></i>Nueva Orden de Compra</h4>
+    </div>
+
+    <div style="display:grid; grid-template-columns:1fr 380px; gap:24px; align-items:start;">
+
+        <!-- Formulario -->
+        <form method="POST" id="formOrden">
+            {% csrf_token %}
+
+            <div style="background:white; border-radius:12px; border:1px solid #d4edda;
+                        border-top:5px solid #28a745; padding:1.5rem; margin-bottom:20px;">
+                <h5 style="color:#2e3b33; font-weight:700; margin-bottom:16px;">
+                    <i class="fas fa-truck me-2" style="color:#28a745;"></i>Proveedor
+                </h5>
+                <select name="id_proveedor" id="selectProveedor" required
+                    onchange="cargarProductos(this.value)"
+                    style="width:100%; padding:11px 14px; border:1px solid #ddd; border-radius:8px;
+                           font-size:14px; outline:none;">
+                    <option value="">Selecciona un proveedor</option>
+                    {% for p in proveedores %}
+                    <option value="{{ p.id_proveedor }}"
+                        {% if proveedor_id == p.id_proveedor|stringformat:"s" %}selected{% endif %}>
+                        {{ p.nombre }} — {{ p.email }}
+                    </option>
+                    {% endfor %}
+                </select>
+                <div id="aviso-proveedor" style="display:none; margin-top:10px; background:#fff3cd;
+                     color:#856404; padding:8px 12px; border-radius:6px; font-size:0.82rem;">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    Este proveedor no tiene productos asignados.
+                    <a href="#" id="link-asignar" style="color:#856404; font-weight:700;">
+                        Asignar productos
+                    </a>
+                </div>
+            </div>
+
+            <!-- Productos -->
+            <div style="background:white; border-radius:12px; border:1px solid #d4edda;
+                        border-top:5px solid #28a745; padding:1.5rem; margin-bottom:20px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                    <h5 style="color:#2e3b33; font-weight:700; margin:0;">
+                        <i class="fas fa-box me-2" style="color:#28a745;"></i>Productos
+                    </h5>
+                    <button type="button" onclick="agregarProducto()" id="btnAgregar"
+                        style="background:#28a745; color:white; border:none; padding:6px 16px;
+                               border-radius:20px; font-size:0.82rem; font-weight:600; cursor:pointer;">
+                        <i class="fas fa-plus"></i> Agregar producto
+                    </button>
+                </div>
+
+                <div id="lista-productos"></div>
+
+                <div id="empty-msg" style="text-align:center; padding:24px; color:#6c757d; font-size:0.85rem;">
+                    <i class="fas fa-box-open" style="font-size:2rem; display:block; margin-bottom:8px; color:#a8d5b5;"></i>
+                    Selecciona un proveedor para ver sus productos
+                </div>
+            </div>
+
+            <!-- Observaciones -->
+            <div style="background:white; border-radius:12px; border:1px solid #d4edda;
+                        border-top:5px solid #28a745; padding:1.5rem; margin-bottom:20px;">
+                <h5 style="color:#2e3b33; font-weight:700; margin-bottom:12px;">
+                    <i class="fas fa-sticky-note me-2" style="color:#28a745;"></i>Observaciones
+                </h5>
+                <textarea name="observaciones" placeholder="Observaciones opcionales..."
+                    style="width:100%; padding:11px 14px; border:1px solid #ddd; border-radius:8px;
+                           font-size:14px; font-family:inherit; resize:vertical; min-height:80px;
+                           box-sizing:border-box; outline:none;"></textarea>
+            </div>
+
+            <button type="submit"
+                style="background:#28a745; color:white; border:none; padding:14px;
+                       border-radius:20px; font-size:1rem; font-weight:600; cursor:pointer;
+                       width:100%; display:flex; align-items:center; justify-content:center; gap:8px;">
+                <i class="fas fa-save"></i> Crear Orden de Compra
+            </button>
+        </form>
+
+        <!-- Resumen -->
+        <div style="background:white; border-radius:12px; border:1px solid #d4edda;
+                    border-top:5px solid #28a745; padding:1.5rem; position:sticky; top:80px;">
+            <h5 style="color:#2e3b33; font-weight:700; margin-bottom:16px;">
+                <i class="fas fa-receipt me-2" style="color:#28a745;"></i>Resumen
+            </h5>
+            <div id="resumen-items" style="margin-bottom:16px; font-size:0.85rem; color:#555;">
+                <p style="color:#6c757d; text-align:center;">Sin productos aún</p>
+            </div>
+            <div style="border-top:2px solid #d4edda; padding-top:12px;
+                        display:flex; justify-content:space-between; align-items:center;">
+                <span style="font-weight:700; color:#2e3b33;">Total:</span>
+                <span id="total-orden" style="font-weight:800; color:#28a745; font-size:1.3rem;">$0</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let contadorProductos = 0;
+    let productosData = [];
+
+    // Si hay proveedor preseleccionado, cargar sus productos
+    window.addEventListener('DOMContentLoaded', () => {
+        const select = document.getElementById('selectProveedor');
+        if (select.value) cargarProductos(select.value);
+    });
+
+    function cargarProductos(proveedorId) {
+        // Limpiar lista
+        document.getElementById('lista-productos').innerHTML = '';
+        document.getElementById('empty-msg').style.display = 'block';
+        document.getElementById('aviso-proveedor').style.display = 'none';
+        document.getElementById('total-orden').textContent = '$0';
+        document.getElementById('resumen-items').innerHTML = '<p style="color:#6c757d; text-align:center;">Sin productos aún</p>';
+        contadorProductos = 0;
+        productosData = [];
+
+        if (!proveedorId) return;
+
+        fetch(`/ordencompra/productos-proveedor/${proveedorId}/`)
+            .then(r => r.json())
+            .then(data => {
+                productosData = data.productos;
+                if (productosData.length === 0) {
+                    document.getElementById('aviso-proveedor').style.display = 'block';
+                    document.getElementById('link-asignar').href = `/proveedor/${proveedorId}/`;
+                } else {
+                    document.getElementById('empty-msg').innerHTML = `
+                        <i class="fas fa-box-open" style="font-size:2rem; display:block; margin-bottom:8px; color:#a8d5b5;"></i>
+                        Agrega al menos un producto`;
+                }
+            })
+            .catch(err => console.warn('Error cargando productos:', err));
+    }
+
+    function agregarProducto() {
+        if (productosData.length === 0) {
+            alert('Selecciona un proveedor primero.');
+            return;
+        }
+
+        const idx = contadorProductos++;
+        document.getElementById('empty-msg').style.display = 'none';
+
+        const opciones = productosData.map(p =>
+            `<option value="${p.id}" data-precio="${p.precio}">${p.nombre}</option>`
+        ).join('');
+
+        const html = `
+        <div id="producto-${idx}" style="border:1px solid #e8f5e9; border-radius:8px; padding:14px; margin-bottom:10px;">
+            <div style="display:grid; grid-template-columns:1fr 100px 130px 40px; gap:10px; align-items:center;">
+                <select name="producto_id[]" onchange="actualizarPrecio(this, ${idx})"
+                    style="padding:9px 12px; border:1px solid #ddd; border-radius:6px; font-size:13px;">
+                    <option value="">Seleccionar producto</option>
+                    ${opciones}
+                </select>
+                <input type="number" name="cantidad[]" placeholder="Cant." min="1" value="1"
+                    oninput="recalcular()"
+                    style="padding:9px 12px; border:1px solid #ddd; border-radius:6px; font-size:13px; text-align:center;">
+                <input type="number" name="precio_unitario[]" id="precio-${idx}" placeholder="Precio" min="0" step="1"
+                    oninput="recalcular()"
+                    style="padding:9px 12px; border:1px solid #ddd; border-radius:6px; font-size:13px; text-align:right;">
+                <button type="button" onclick="eliminarProducto(${idx})"
+                    style="background:#dc3545; color:white; border:none; border-radius:6px;
+                           padding:9px; cursor:pointer; font-size:13px;">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+        </div>`;
+
+        document.getElementById('lista-productos').insertAdjacentHTML('beforeend', html);
+        recalcular();
+    }
+
+    function actualizarPrecio(select, idx) {
+        const opt = select.options[select.selectedIndex];
+        const precio = opt.getAttribute('data-precio') || 0;
+        document.getElementById(`precio-${idx}`).value = precio;
+        recalcular();
+    }
+
+    function eliminarProducto(idx) {
+        document.getElementById(`producto-${idx}`).remove();
+        if (!document.querySelectorAll('#lista-productos > div').length) {
+            document.getElementById('empty-msg').style.display = 'block';
+        }
+        recalcular();
+    }
+
+    function recalcular() {
+        const cantidades = document.querySelectorAll('input[name="cantidad[]"]');
+        const precios    = document.querySelectorAll('input[name="precio_unitario[]"]');
+        let total = 0;
+        let resumen = '';
+
+        cantidades.forEach((c, i) => {
+            const cant   = parseFloat(c.value) || 0;
+            const precio = parseFloat(precios[i]?.value) || 0;
+            const sub    = cant * precio;
+            total += sub;
+            if (sub > 0) {
+                resumen += `<div style="display:flex; justify-content:space-between; padding:4px 0; border-bottom:1px solid #f0f0f0;">
+                    <span>x${cant}</span>
+                    <span style="font-weight:600; color:#28a745;">$${sub.toLocaleString()}</span>
+                </div>`;
+            }
+        });
+
+        document.getElementById('total-orden').textContent = '$' + total.toLocaleString();
+        document.getElementById('resumen-items').innerHTML = resumen || '<p style="color:#6c757d; text-align:center;">Sin productos aún</p>';
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,143 @@
+{% extends 'gestion/dashboard.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'ordencompra/css/styles.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4 px-4">
+
+    <div style="display:flex; align-items:center; gap:12px; margin-bottom:1.5rem;">
+        <a href="{% url 'lista_ordenes' %}" style="color:#28a745; font-size:1.2rem;">
+            <i class="fas fa-arrow-left"></i>
+        </a>
+        <h4 class="page-title mb-0">
+            <i class="fas fa-file-invoice me-2"></i>Orden de Compra #{{ orden.id_orden }}
+        </h4>
+    </div>
+
+    {% if messages %}
+    {% for message in messages %}
+    <div class="{% if message.tags == 'success' %}alerta-exito{% else %}alerta-error{% endif %}">
+        <i class="fas fa-{% if message.tags == 'success' %}check-circle{% else %}exclamation-triangle{% endif %}"></i>
+        {{ message }}
+    </div>
+    {% endfor %}
+    {% endif %}
+
+    <div style="display:grid; grid-template-columns:1fr 320px; gap:24px; align-items:start;">
+
+        <!-- Detalle -->
+        <div class="detalle-card">
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;
+                        margin-bottom:20px; padding-bottom:16px; border-bottom:1px solid #f0f0f0;">
+                <div>
+                    <div style="font-size:0.82rem; color:#6c757d; margin-bottom:4px;">Proveedor</div>
+                    <div style="font-weight:700; color:#2e3b33;">{{ orden.id_proveedor.nombre }}</div>
+                    <div style="font-size:0.82rem; color:#6c757d;">{{ orden.id_proveedor.email }}</div>
+                    <div style="font-size:0.82rem; color:#6c757d;">{{ orden.id_proveedor.telefono }}</div>
+                </div>
+                <div>
+                    <div style="font-size:0.82rem; color:#6c757d; margin-bottom:4px;">Creada por</div>
+                    <div style="font-weight:700; color:#2e3b33;">
+                        {{ orden.id_usuario.nombre }} {{ orden.id_usuario.apellido }}
+                    </div>
+                    <div style="font-size:0.82rem; color:#6c757d;">{{ orden.fecha|date:"d/m/Y" }}</div>
+                </div>
+            </div>
+
+            {% if orden.observaciones %}
+            <div style="background:#f9fff9; border-left:4px solid #28a745; padding:12px 16px;
+                        border-radius:6px; margin-bottom:20px; font-size:0.85rem; color:#444;">
+                <strong>Observaciones:</strong> {{ orden.observaciones }}
+            </div>
+            {% endif %}
+
+            <table style="width:100%; border-collapse:collapse; font-size:0.85rem;">
+                <thead>
+                    <tr style="background:#f0fff4;">
+                        <th style="padding:10px 14px; text-align:left; color:#555; font-weight:600;">Producto</th>
+                        <th style="padding:10px 14px; text-align:center; color:#555; font-weight:600;">Cantidad</th>
+                        <th style="padding:10px 14px; text-align:right; color:#555; font-weight:600;">Precio unit.</th>
+                        <th style="padding:10px 14px; text-align:right; color:#555; font-weight:600;">Subtotal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for d in detalles %}
+                    <tr style="border-bottom:1px solid #f0f0f0;">
+                        <td style="padding:10px 14px; font-weight:600;">{{ d.nombre_producto }}</td>
+                        <td style="padding:10px 14px; text-align:center;">{{ d.cantidad }}</td>
+                        <td style="padding:10px 14px; text-align:right;">${{ d.precio_unitario|floatformat:0 }}</td>
+                        <td style="padding:10px 14px; text-align:right; font-weight:700; color:#28a745;">
+                            ${{ d.subtotal|floatformat:0 }}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="3" style="padding:14px; text-align:right; font-weight:700; color:#333;">
+                            Total:
+                        </td>
+                        <td style="padding:14px; text-align:right; font-weight:800; color:#28a745; font-size:1.2rem;">
+                            ${{ orden.total|floatformat:0 }}
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+
+        <!-- Panel lateral -->
+        <div>
+            <div class="detalle-card">
+                <div class="seccion-titulo"><i class="fas fa-tasks"></i> Estado de la Orden</div>
+
+                <div style="text-align:center; margin-bottom:20px;">
+                    {% if orden.estado == 'pendiente' %}
+                    <span class="badge-pendiente" style="font-size:0.9rem; padding:8px 20px;">
+                        <i class="fas fa-clock"></i> Pendiente
+                    </span>
+                    {% elif orden.estado == 'enviada' %}
+                    <span class="badge-enviada" style="font-size:0.9rem; padding:8px 20px;">
+                        <i class="fas fa-paper-plane"></i> Enviada
+                    </span>
+                    {% elif orden.estado == 'recibida' %}
+                    <span class="badge-recibida" style="font-size:0.9rem; padding:8px 20px;">
+                        <i class="fas fa-box"></i> Recibida
+                    </span>
+                    {% elif orden.estado == 'cerrada' %}
+                    <span class="badge-cerrada" style="font-size:0.9rem; padding:8px 20px;">
+                        <i class="fas fa-lock"></i> Cerrada
+                    </span>
+                    {% endif %}
+                </div>
+
+                {% if orden.estado != 'cerrada' %}
+                <form method="POST" action="{% url 'cambiar_estado_orden' orden.id_orden %}">
+                    {% csrf_token %}
+                    <select name="estado" class="campo-input" style="margin-bottom:10px;">
+                        {% if orden.estado == 'pendiente' %}
+                        <option value="enviada">Enviar al proveedor por correo</option>
+                        {% elif orden.estado == 'enviada' %}
+                        <option value="recibida">Marcar como Recibida</option>
+                        {% elif orden.estado == 'recibida' %}
+                        <option value="cerrada">Cerrar orden</option>
+                        {% endif %}
+                    </select>
+                    <button type="submit" class="btn-guardar">
+                        <i class="fas fa-check"></i> Actualizar estado
+                    </button>
+                </form>
+                {% else %}
+                <div style="text-align:center; color:#6c757d; font-size:0.85rem;">
+                    <i class="fas fa-lock"></i> Orden cerrada
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

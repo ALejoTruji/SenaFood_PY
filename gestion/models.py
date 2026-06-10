@@ -181,24 +181,6 @@ class MovimientosInventario(models.Model):
         managed = True
         db_table = 'movimientos_inventario'
 
-class Ordencompra(models.Model):
-    id_orden = models.BigAutoField(primary_key=True)
-    fecha = models.DateField(blank=True, null=True)
-    estado = models.CharField(max_length=255, blank=True, null=True)
-    id_proveedor = models.ForeignKey('proveedor.Proveedor', models.DO_NOTHING, db_column='id_proveedor')
-    id_usuario = models.ForeignKey('Usuario', models.DO_NOTHING, db_column='id_usuario', blank=True, null=True)
-    producto = models.CharField(max_length=255, blank=True, null=True)
-    cantidad = models.IntegerField(blank=True, null=True)
-    precio_unitario = models.DecimalField(max_digits=38, decimal_places=2, blank=True, null=True)
-    total = models.DecimalField(max_digits=38, decimal_places=2, blank=True, null=True)
-    create_at = models.DateTimeField(blank=True, null=True)
-    update_at = models.DateTimeField(blank=True, null=True)
-
-    class Meta:
-        managed = True
-        db_table = 'ordencompra'
-
-
 class Pedido(models.Model):
     id_pedido = models.BigAutoField(primary_key=True)
     # auto_now_add=True para que se registre la fecha en el momento exacto del pedido
