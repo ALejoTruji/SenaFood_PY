@@ -3,6 +3,7 @@ from django.http import JsonResponse
 from django.contrib import messages
 from django.core.mail import EmailMultiAlternatives
 from django.conf import settings
+from django.db import transaction
 from .models import OrdenCompra, DetalleOrdenCompra
 from gestion.models import Usuario, Producto
 from proveedor.models import Proveedor
@@ -56,21 +57,17 @@ def lista_ordenes(request):
         'rol_usuario':       request.session.get('usuario_rol', ''),
     })
 
+
 @sesion_requerida
 @solo_admin
 def crear_orden(request):
-    from producto.models import ProveedorProducto
     proveedores = Proveedor.objects.filter(es_activo=True).order_by('nombre')
 
-    # Proveedor preseleccionado desde detalle_proveedor
+    # Proveedor preseleccionado desde la URL (si aplica)
     proveedor_id = request.GET.get('proveedor', '')
-    productos_proveedor = []
-
-    if proveedor_id:
-        productos_proveedor = ProveedorProducto.objects.filter(
-            proveedor_id=proveedor_id,
-            es_activo=True
-        ).select_related('producto')
+    
+    # Cargamos todos los productos del sistema para la vista inicial
+    productos_sistema = Producto.objects.all().order_by('nombre')
 
     if request.method == 'POST':
         id_proveedor  = request.POST.get('id_proveedor')
@@ -83,7 +80,7 @@ def crear_orden(request):
             messages.error(request, 'Selecciona un proveedor y al menos un producto.')
             return render(request, 'ordencompra/crear.html', {
                 'proveedores':       proveedores,
-                'productos_proveedor': productos_proveedor,
+                'productos_sistema': productos_sistema,
                 'proveedor_id':      id_proveedor,
                 'nombre_usuario':    request.session.get('usuario_nombre', ''),
                 'rol_usuario':       request.session.get('usuario_rol', ''),
@@ -108,6 +105,7 @@ def crear_orden(request):
                 precio   = float(precios[i])
                 subtotal = cantidad * precio
                 total   += subtotal
+                
                 DetalleOrdenCompra.objects.create(
                     orden           = orden,
                     producto        = producto,
@@ -127,11 +125,12 @@ def crear_orden(request):
 
     return render(request, 'ordencompra/crear.html', {
         'proveedores':         proveedores,
-        'productos_proveedor': productos_proveedor,
+        'productos_sistema':   productos_sistema,
         'proveedor_id':        proveedor_id,
         'nombre_usuario':      request.session.get('usuario_nombre', ''),
         'rol_usuario':         request.session.get('usuario_rol', ''),
     })
+
 
 @sesion_requerida
 @solo_admin
@@ -262,24 +261,99 @@ def enviar_correo_proveedor(orden):
     correo.attach_alternative(html, "text/html")
     correo.send(fail_silently=False)
 
+
 @sesion_requerida
 @solo_admin
 def productos_proveedor_json(request, id_proveedor):
-    from producto.models import ProveedorProducto
-    from django.http import JsonResponse
-
-    pps = ProveedorProducto.objects.filter(
-        proveedor_id=id_proveedor,
-        es_activo=True
-    ).select_related('producto')
+    """
+    Retorna SIEMPRE la lista completa de todos los productos creados en el sistema,
+    ignorando las restricciones de asignación por proveedor.
+    """
+    pps = Producto.objects.all().order_by('nombre')
 
     productos = [
         {
-            'id':     pp.producto.id_producto,
-            'nombre': pp.producto.nombre,
-            'precio': float(pp.precio_proveedor or pp.producto.costo_unitario or 0),
+            'id':     pp.id_producto,
+            'nombre': pp.nombre,
+            'precio': float(getattr(pp, 'costo_unitario', 0) or getattr(pp, 'precio', 0) or 0),
         }
         for pp in pps
     ]
 
     return JsonResponse({'productos': productos})
+
+
+@sesion_requerida
+@solo_admin
+def editar_orden(request, id_orden):
+    """
+    Vista optimizada para modificar las cantidades, precios u observaciones de una orden de compra.
+    Implementa transacciones atómicas para blindar el borrado y la reescritura de filas.
+    """
+    orden = get_object_or_404(OrdenCompra, pk=id_orden)
+    
+    if orden.estado in ['recibida', 'cerrada']:
+        messages.error(request, f'La Orden #{orden.id_orden} ya fue {orden.estado} y no se puede modificar.')
+        return redirect('detalle_orden', id_orden=orden.id_orden)
+
+    productos_sistema = Producto.objects.all().order_by('nombre')
+    detalles_actuales = DetalleOrdenCompra.objects.filter(orden=orden).select_related('producto')
+
+    if request.method == 'POST':
+        observaciones = request.POST.get('observaciones', '')
+        ids_producto  = request.POST.getlist('producto_id[]')
+        cantidades    = request.POST.getlist('cantidad[]')
+        # CAMBIO CLAVE: Cambiado de 'precio_unitario[]' a 'precio[]' para coincidir exactamente con el name del HTML
+        precios       = request.POST.getlist('precio[]') 
+
+        if not ids_producto or len(ids_producto) == 0:
+            messages.error(request, 'La orden no puede quedar vacía. Selecciona al menos un producto.')
+            return redirect('editar_orden', id_orden=orden.id_orden)
+
+        try:
+            # Usamos transacciones para asegurar que si algo falla, no se pierdan los ítems anteriores
+            with transaction.atomic():
+                orden.observaciones = observaciones
+                
+                # 1. Limpiamos el detalle anterior de manera segura
+                DetalleOrdenCompra.objects.filter(orden=orden).delete()
+
+                # 2. Reconstruimos los detalles con las filas del POST
+                total = 0
+                for i, pid in enumerate(ids_producto):
+                    if not pid:  # Omitir filas que no tengan un producto seleccionado
+                        continue
+                        
+                    producto = Producto.objects.get(pk=pid)
+                    cantidad = int(cantidades[i])
+                    precio   = float(precios[i])
+                    subtotal = cantidad * precio
+                    total   += subtotal
+                    
+                    DetalleOrdenCompra.objects.create(
+                        orden           = orden,
+                        producto        = producto,
+                        nombre_producto = producto.nombre,
+                        cantidad        = cantidad,
+                        precio_unitario = precio,
+                        subtotal        = subtotal,
+                    )
+
+                # 3. Guardamos el total final recalculado
+                orden.total = total
+                orden.save()
+
+            messages.success(request, f'Orden #{orden.id_orden} modificada correctamente.')
+            return redirect('detalle_orden', id_orden=orden.id_orden)
+
+        except Exception as e:
+            messages.error(request, f'Ocurrió un error al guardar los cambios: {str(e)}')
+            return redirect('editar_orden', id_orden=orden.id_orden)
+
+    return render(request, 'ordencompra/editar.html', {
+        'orden':             orden,
+        'detalles':          detalles_actuales,
+        'productos_sistema': productos_sistema,
+        'nombre_usuario':    request.session.get('usuario_nombre', ''),
+        'rol_usuario':       request.session.get('usuario_rol', ''),
+    })

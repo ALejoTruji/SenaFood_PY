@@ -28,7 +28,6 @@
 
     <div style="display:grid; grid-template-columns:1fr 320px; gap:24px; align-items:start;">
 
-        <!-- Detalle -->
         <div class="detalle-card">
 
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;
@@ -52,6 +51,16 @@
             <div style="background:#f9fff9; border-left:4px solid #28a745; padding:12px 16px;
                         border-radius:6px; margin-bottom:20px; font-size:0.85rem; color:#444;">
                 <strong>Observaciones:</strong> {{ orden.observaciones }}
+            </div>
+            {% endif %}
+
+            {% if orden.estado == 'pendiente' or orden.estado == 'enviada' %}
+            <div style="margin-bottom: 20px;">
+                <a href="{% url 'editar_orden' orden.id_orden %}" 
+                style="background:#ffc107; color:#212529; padding:8px 16px; border-radius:20px; 
+                        text-decoration:none; font-size:0.85rem; font-weight:600; display:inline-flex; align-items:center; gap:6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                    <i class="fas fa-edit"></i> Corregir cantidades / Precios
+                </a>
             </div>
             {% endif %}
 
@@ -89,7 +98,6 @@
             </table>
         </div>
 
-        <!-- Panel lateral -->
         <div>
             <div class="detalle-card">
                 <div class="seccion-titulo"><i class="fas fa-tasks"></i> Estado de la Orden</div>

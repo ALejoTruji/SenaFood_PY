@@ -1,0 +1,214 @@
+{% extends 'gestion/dashboard.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'ordencompra/css/styles.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4 px-4">
+
+    <div style="display:flex; align-items:center; gap:12px; margin-bottom:1.5rem;">
+        <a href="{% url 'detalle_orden' orden.id_orden %}" style="color:#28a745; font-size:1.2rem;">
+            <i class="fas fa-arrow-left"></i>
+        </a>
+        <h4 class="page-title mb-0"><i class="fas fa-edit me-2"></i>Modificar Orden de Compra #{{ orden.id_orden }}</h4>
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <form method="POST" id="formOrden">
+        {% csrf_token %}
+        
+        <div style="display:grid; grid-template-columns:1fr 380px; gap:24px; align-items:start;">
+            
+            <div>
+                <div style="background:white; border-radius:12px; border:1px solid #d4edda; border-top:5px solid #28a745; padding:1.5rem; margin-bottom:20px;">
+                    <h5 style="color:#2e3b33; font-weight:700; margin-bottom:16px;">
+                        <i class="fas fa-truck me-2" style="color:#28a745;"></i>Proveedor Seleccionado
+                    </h5>
+                    <input type="hidden" name="id_proveedor" value="{{ orden.id_proveedor.id_proveedor }}">
+                    <select disabled style="width:100%; padding:11px 14px; border:1px solid #ddd; border-radius:8px; font-size:14px; background-color:#e9ecef; color:#495057;">
+                        <option selected>{{ orden.id_proveedor.nombre }} — {{ orden.id_proveedor.email }}</option>
+                    </select>
+                </div>
+
+                <div style="background:white; border-radius:12px; border:1px solid #d4edda; border-top:5px solid #28a745; padding:1.5rem; margin-bottom:20px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                        <h5 style="color:#2e3b33; font-weight:700; margin:0;">
+                            <i class="fas fa-box me-2" style="color:#28a745;"></i>Productos Solicitados
+                        </h5>
+                        <button type="button" onclick="agregarProducto()"
+                            style="background:#28a745; color:white; border:none; padding:6px 16px; border-radius:20px; font-size:0.82rem; font-weight:600; cursor:pointer;">
+                            <i class="fas fa-plus"></i> Agregar producto
+                        </button>
+                    </div>
+
+                    <div id="lista-productos">
+                        {% for d in detalles %}
+                        <div id="fila-existente-{{ forloop.index0 }}" class="fila-producto" style="border:1px solid #e8f5e9; border-radius:8px; padding:14px; margin-bottom:10px; background:#fafafa;">
+                            <div style="display:grid; grid-template-columns:1fr 100px 130px 40px; gap:10px; align-items:center;">
+                                
+                                <select name="producto_id[]" onchange="actualizarPrecio(this)" style="padding:9px 12px; border:1px solid #ddd; border-radius:6px; font-size:13px;" required>
+                                    <option value="">Seleccionar producto</option>
+                                    {% for p in productos_sistema %}
+                                    <option value="{{ p.id_producto }}" data-precio="{{ p.costo_unitario|default:0 }}" {% if d.producto.id_producto == p.id_producto %}selected{% endif %}>
+                                        {{ p.nombre }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+
+                                <input type="number" name="cantidad[]" value="{{ d.cantidad }}" min="1" oninput="recalcularTotales()" style="padding:9px 12px; border:1px solid #ddd; border-radius:6px; font-size:13px; text-align:center;" required>
+                                
+                                <input type="number" name="precio[]" value="{{ d.precio_unitario }}" step="0.01" min="0" oninput="recalcularTotales()" style="padding:9px 12px; border:1px solid #ddd; border-radius:6px; font-size:13px; text-align:right;" required>
+
+                                <button type="button" onclick="eliminarFila('fila-existente-{{ forloop.index0 }}')" style="background:none; border:none; color:#dc3545; font-size:1.1rem; cursor:pointer;">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <div style="margin-top:20px;">
+                        <label style="display:block; color:#495057; font-size:0.85rem; font-weight:600; margin-bottom:6px;">Observaciones de Modificación</label>
+                        <textarea name="observaciones" rows="3" placeholder="Indica modificaciones o cambios si aplica..." style="width:100%; padding:10px; border:1px solid #ddd; border-radius:8px; font-size:13px; resize:vertical;">{{ orden.observaciones }}</textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div style="position:sticky; top:20px; background:white; border-radius:12px; border:1px solid #d4edda; border-top:5px solid #28a745; padding:1.5rem; box-shadow:0 4px 6px rgba(0,0,0,0.03);">
+                <h5 style="color:#2e3b33; font-weight:700; margin-bottom:20px;">
+                    <i class="fas fa-calculator me-2" style="color:#28a745;"></i>Nuevo Resumen
+                </h5>
+                
+                <div style="display:flex; justify-content:space-between; margin-bottom:12px; font-size:14px; color:#6c757d;">
+                    <span>Subtotal:</span>
+                    <span id="resumen-subtotal" style="font-weight:600; color:#212529;">$0</span>
+                </div>
+                <div style="display:flex; justify-content:space-between; margin-bottom:16px; font-size:14px; color:#6c757d;">
+                    <span>IVA (19%):</span>
+                    <span id="resumen-iva" style="font-weight:600; color:#212529;">$0</span>
+                </div>
+                
+                <hr style="border:0; border-top:1px solid #e8f5e9; margin-bottom:16px;">
+                
+                <div style="display:flex; justify-content:space-between; margin-bottom:24px; font-size:16px; font-weight:700; color:#2e3b33;">
+                    <span>Total:</span>
+                    <span id="resumen-total" style="color:#28a745; font-size:1.4rem;">$0</span>
+                </div>
+
+                <button type="submit" style="width:100%; background:#28a745; color:white; border:none; padding:12px; border-radius:8px; font-weight:600; font-size:14px; cursor:pointer; margin-bottom:10px; display:inline-flex; align-items:center; justify-content:center; gap:8px;">
+                    <i class="fas fa-save"></i> Guardar Cambios en la Orden
+                </button>
+                <a href="{% url 'detalle_orden' orden.id_orden %}" style="width:100%; background:#f8f9fa; color:#6c757d; border:1px solid #ddd; padding:10px; border-radius:8px; font-weight:600; font-size:13px; text-decoration:none; display:inline-flex; align-items:center; justify-content:center;">
+                    Cancelar
+                </a>
+            </div>
+
+        </div>
+    </form>
+</div>
+
+<script>
+    let contadorNuevos = 0;
+
+    // Diccionario de productos cargados del sistema
+    const productosSistema = {
+        {% for p in productos_sistema %}
+        "{{ p.id_producto }}": { nombre: "{{ p.nombre|escapejs }}", precio: parseFloat("{{ p.costo_unitario|default:0 }}") },
+        {% endfor %}
+    };
+
+    function agregarProducto() {
+        const contenedor = document.getElementById('lista-productos');
+        const idUnico = `fila-nueva-${contadorNuevos}`;
+
+        let opciones = '<option value="">Seleccionar producto</option>';
+        for (const id in productosSistema) {
+            opciones += `<option value="${id}" data-precio="${productosSistema[id].precio}">${productosSistema[id].nombre}</option>`;
+        }
+
+        const nuevaFila = `
+            <div id="${idUnico}" class="fila-producto" style="border:1px solid #e8f5e9; border-radius:8px; padding:14px; margin-bottom:10px; background:#fafafa;">
+                <div style="display:grid; grid-template-columns:1fr 100px 130px 40px; gap:10px; align-items:center;">
+                    <select name="producto_id[]" onchange="actualizarPrecio(this)" style="padding:9px 12px; border:1px solid #ddd; border-radius:6px; font-size:13px;" required>
+                        ${opciones}
+                    </select>
+                    <input type="number" name="cantidad[]" value="1" min="1" oninput="recalcularTotales()" style="padding:9px 12px; border:1px solid #ddd; border-radius:6px; font-size:13px; text-align:center;" required>
+                    <input type="number" name="precio[]" value="0" step="0.01" min="0" oninput="recalcularTotales()" style="padding:9px 12px; border:1px solid #ddd; border-radius:6px; font-size:13px; text-align:right;" required>
+                    <button type="button" onclick="eliminarFila('${idUnico}')" style="background:none; border:none; color:#dc3545; font-size:1.1rem; cursor:pointer;">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
+                </div>
+            </div>
+        `;
+
+        contenedor.insertAdjacentHTML('beforeend', nuevaFila);
+        contadorNuevos++;
+        recalcularTotales();
+    }
+
+    function actualizarPrecio(selectElement) {
+        const opcion = selectElement.options[selectElement.selectedIndex];
+        const precio = parseFloat(opcion.getAttribute('data-precio')) || 0;
+        
+        const fila = selectElement.closest('.fila-producto');
+        const inputPrecio = fila.querySelector('input[name="precio[]"]');
+        if (inputPrecio) {
+            inputPrecio.value = precio;
+        }
+        recalcularTotales();
+    }
+
+    function eliminarFila(idElemento) {
+        const elemento = document.getElementById(idElemento);
+        if (elemento) {
+            elemento.remove(); // Remueve exclusivamente este nodo sin alterar sus hermanos
+        }
+        recalcularTotales();
+    }
+
+    function recalcularTotales() {
+        let subtotal = 0;
+        const filas = document.querySelectorAll('.fila-producto');
+
+        filas.forEach(fila => {
+            const select = fila.querySelector('select[name="producto_id[]"]');
+            const inputCantidad = fila.querySelector('input[name="cantidad[]"]');
+            const inputPrecio = fila.querySelector('input[name="precio[]"]');
+
+            if (select && select.value && inputCantidad && inputPrecio) {
+                const cantidad = parseFloat(inputCantidad.value) || 0;
+                const precio = parseFloat(inputPrecio.value) || 0;
+                subtotal += (cantidad * precio);
+            }
+        });
+
+        const iva = subtotal * 0.19;
+        const total = subtotal + iva;
+
+        const formato = new Intl.NumberFormat('es-CO', {
+            style: 'currency',
+            currency: 'COP',
+            minimumFractionDigits: 0
+        });
+
+        document.getElementById('resumen-subtotal').innerText = formato.format(subtotal);
+        document.getElementById('resumen-iva').innerText = formato.format(iva);
+        document.getElementById('resumen-total').innerText = formato.format(total);
+    }
+
+    // Calcular montos iniciales cargados por Django
+    window.addEventListener('DOMContentLoaded', () => {
+        recalcularTotales();
+    });
+</script>
+{% endblock %}
