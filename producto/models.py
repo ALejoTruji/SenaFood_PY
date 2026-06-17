@@ -12,7 +12,7 @@ class ProveedorProducto(models.Model):
     create_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'proveedor_producto'
         verbose_name = 'Proveedor-Producto'
         unique_together = ('proveedor', 'producto')

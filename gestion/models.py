@@ -10,7 +10,7 @@ class Usuario(models.Model):
     nombre = models.CharField(max_length=255, blank=True, null=True)
     apellido = models.CharField(max_length=255, blank=True, null=True)
     email = models.CharField(unique=True, max_length=255)
-    password = models.CharField(db_column='password', max_length=255)   
+    password = models.CharField(db_column='contraseña', max_length=255)
     telefono = models.CharField(max_length=255, blank=True, null=True)
     tipo_identificacion = models.CharField(db_column='tipo_identificacion', max_length=255, blank=True, null=True)
     numero_identificacion = models.CharField(db_column='numero_identificacion', max_length=255, blank=True, null=True)

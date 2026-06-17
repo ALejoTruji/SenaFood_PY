@@ -30,7 +30,7 @@ class PQRSF(models.Model):
     update_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        managed = False  # ya existe la tabla en MySQL
+        managed = True  # ya existe la tabla en MySQL
         db_table = 'pqrsf'
         verbose_name = 'PQRSF'
         verbose_name_plural = 'PQRSFs'
