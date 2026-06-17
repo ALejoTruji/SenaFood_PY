@@ -235,7 +235,7 @@ class Producto(models.Model):
     fecha_fin_promo = models.DateField(blank=True, null=True)
 
     class Meta:
-        managed = False
+        managed = True
         db_table = 'producto'
 
     @property
