@@ -1,4 +1,4 @@
-{% load static %}
+﻿{% load static %}
 <!DOCTYPE html>
 <html lang="es">
 
@@ -8,152 +8,6 @@
     <title>SenaFOOD - Bienvenido</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="{% static 'gestion/css/styles.css' %}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        html, body {
-            font-family: 'Poppins', sans-serif;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-
-        .hero {
-            position: relative;
-            flex: 1.2;
-            background: url("{% static 'gestion/img/hero.png' %}") center center / contain no-repeat;
-            background-color: #1a3a1a;
-            display: flex;
-            align-items: flex-start;
-            justify-content: flex-end;
-            padding: 1.5rem;
-        }
-
-        .hero::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(to bottom, rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.45));
-        }
-
-        .hero-logo {
-            position: relative;
-            z-index: 2;
-            width: 200px;
-            height: 200px;
-            object-fit: contain;
-            filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.4));
-            mix-blend-mode: screen;
-        }
-
-        .bottom {
-            flex: 1;
-            background: linear-gradient(135deg, #a8d5b5 0%, #d4edda 50%, #f0fff4 100%);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 1.5rem 2rem;
-            text-align: center;
-            gap: 0.3rem;
-        }
-
-        .bottom h1 {
-            font-size: 2rem;
-            font-weight: 800;
-            color: #1a1a1a;
-            margin-bottom: 0.3rem;
-        }
-
-        .bottom h1 span {
-            color: #28a745;
-        }
-
-        .bottom p {
-            font-size: 0.95rem;
-            color: #666;
-            margin-bottom: 1rem;
-            max-width: 400px;
-        }
-
-        .btn-group {
-            display: flex;
-            gap: 1rem;
-        }
-
-        .btn-ingresar {
-            background-color: #28a745;
-            color: white;
-            border: none;
-            padding: 10px 36px;
-            border-radius: 25px;
-            font-size: 0.95rem;
-            font-weight: 600;
-            text-decoration: none;
-            transition: background 0.2s, transform 0.1s;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .btn-ingresar:hover {
-            background-color: #218838;
-            color: white;
-            transform: translateY(-1px);
-        }
-
-        .btn-registrar {
-            background-color: white;
-            color: #28a745;
-            border: 2px solid #28a745;
-            padding: 10px 36px;
-            border-radius: 25px;
-            font-size: 0.95rem;
-            font-weight: 600;
-            text-decoration: none;
-            transition: all 0.2s;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .btn-registrar:hover {
-            background-color: #28a745;
-            color: white;
-            transform: translateY(-1px);
-        }
-
-        .divider {
-            width: 60px;
-            height: 4px;
-            background: #28a745;
-            border-radius: 2px;
-            margin: 0 auto 0.8rem;
-        }
-    </style>
-</head>
-
-<body>
-    {% include 'gestion/navbar_publico.html' %}
-    <!-- Hero con imagen -->{% load static %}
-<!DOCTYPE html>
-<html lang="es">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SenaFOOD - Bienvenido</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="{% static 'gestion/css/styles.css' %}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
 
@@ -283,7 +137,6 @@
             margin: 0 auto 0.8rem;
         }
 
-        /* ===== Responsive: tablets y móviles grandes ===== */
         @media (max-width: 768px) {
             .hero {
                 flex: none;
@@ -331,7 +184,6 @@
             }
         }
 
-        /* ===== Responsive: móviles pequeños ===== */
         @media (max-width: 480px) {
             .hero {
                 min-height: 180px;
@@ -352,31 +204,6 @@
 <body>
     {% include 'gestion/navbar_publico.html' %}
     <!-- Hero con imagen -->
-    <div class="hero" style="margin-top: 64px;">
-        <img src="{% static 'gestion/img/logo.png' %}" alt="SenaFOOD" class="hero-logo">
-    </div>
-
-    <!-- Contenido inferior -->
-    <div class="bottom">
-        <img src="{% static 'gestion/img/logo.png' %}" alt="SenaFOOD"
-            style="width:200px; height:200px; object-fit:contain; margin-bottom:-2rem;">
-        <div class="divider"></div>
-        <h1><span>¡Bienvenido a SenaFOOD</span></h1>
-        <p>Explora la variedad y el sabor optimizando tu tiempo.</p>
-        <div class="btn-group">
-            <a href="{% url 'login' %}" class="btn-ingresar">
-                <i></i> Ingresar
-            </a>
-            <a href="{% url 'registro' %}" class="btn-registrar">
-                <i></i> Registrar
-            </a>
-        </div>
-    </div>
-
-</body>
-
-</html>
-
     <div class="hero" style="margin-top: 64px;">
         <img src="{% static 'gestion/img/logo.png' %}" alt="SenaFOOD" class="hero-logo">
     </div>
