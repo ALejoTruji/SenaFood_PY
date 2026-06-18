@@ -212,7 +212,7 @@ def exportar_excel_pqrsf(request):
         
         # Fecha con zona horaria local (Colombia)
         fecha_local = localtime(p.create_at) if p.create_at else None
-        ws.cell(row=row, column=8, value=fecha_local.strftime('%d/%m/%Y %H:%M') if fecha_local else '')
+        ws.cell(row=row, column=8, value=p.create_at.strftime('%d/%m/%Y %H:%M') if p.create_at else '')
 
     # Auto-ajuste de columnas
     for col in ws.columns:
@@ -313,7 +313,7 @@ def exportar_pdf_pqrsf(request):
 
     elements.append(Paragraph('SenaFOOD - Sistema de Gestión', subtitle_style))
     elements.append(Paragraph(
-        f'Generado el {localtime(timezone.now()).strftime("%d/%m/%Y a las %H:%M")} '
+        f'Generado el {timezone.now().strftime("%d/%m/%Y a las %H:%M")} '
         f'por {request.session.get("usuario_nombre", "Administrador")}',
         subtitle_style
     ))
