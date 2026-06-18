@@ -359,7 +359,7 @@ def exportar_pdf_pqrsf(request):
         except Exception:
             nombre_u = "Usuario no encontrado"
 
-        fecha_fila = localtime(p.create_at).strftime('%d/%m/%Y %H:%M') if p.create_at else "N/A"
+        fecha_fila = p.create_at.strftime('%d/%m/%Y %H:%M') if p.create_at else "N/A"
         descripcion = (p.descripcion[:50] + '...') if p.descripcion and len(p.descripcion) > 50 else (p.descripcion or '')
 
         data.append([
