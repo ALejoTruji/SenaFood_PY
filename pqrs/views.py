@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect, get_object_or_404
+﻿from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.http import HttpResponse
 from django.utils import timezone
@@ -20,7 +20,7 @@ from reportlab.lib.units import cm
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
 
 
-def get_usuario_session(request): #Helper para obtener usuario y su rol desde la sesión.
+def get_usuario_session(request): #Helper para obtener usuario y su rol desde la sesiÃ³n.
     if 'usuario_id' not in request.session:
         return None, None
     try:
@@ -59,7 +59,7 @@ def lista_pqrsf_view(request):
     total_no_leidas  = base.filter(leida=False).count()
     total_pendiente  = base.filter(estado='Pendiente').count()
     total_resuelta   = base.filter(estado='Resuelta').count()
-    total_en_gestion = base.filter(estado='En gestión').count()
+    total_en_gestion = base.filter(estado='En gestiÃ³n').count()
 
     return render(request, 'pqrs/lista.html', {
         'pqrsf_list':      pqrsf_list,
@@ -90,11 +90,11 @@ def detalle_pqrsf_view(request, id):
     if rol != 'Administrador' and pqrsf.usuario != usuario:
         return redirect('lista_pqrsf')
 
-    # Al ver el detalle, marcar como leída
+    # Al ver el detalle, marcar como leÃ­da
     if not pqrsf.leida:
         pqrsf.leida = True
         if pqrsf.estado == 'Pendiente':
-            pqrsf.estado = 'Leída'
+            pqrsf.estado = 'LeÃ­da'
         pqrsf.save()
 
     # Admin puede responder y cambiar estado
@@ -103,7 +103,7 @@ def detalle_pqrsf_view(request, id):
         pqrsf.estado = request.POST.get('estado', pqrsf.estado)
         pqrsf.save()
 
-        # ✅ Notificar al usuario dueño del PQRSF
+        # âœ… Notificar al usuario dueÃ±o del PQRSF
         Notificacion.objects.create(
             usuario=pqrsf.usuario,
             mensaje=f"Tu PQRSF #{pqrsf.id_pqrsf} fue respondida. Estado: {pqrsf.estado}",
@@ -154,10 +154,10 @@ def crear_pqrsf_view(request):
                 usuario=admin,
                 mensaje=f"Nueva PQRSF de {usuario.nombre} {usuario.apellido}: {tipo}",
                 tipo='pqrsf',
-                pqrsf=nueva_pqrsf,  # ✅ esto faltaba
+                pqrsf=nueva_pqrsf,  # âœ… esto faltaba
             )
 
-        messages.success(request, '¡PQRSF creada correctamente!')
+        messages.success(request, 'Â¡PQRSF creada correctamente!')
         return redirect('lista_pqrsf')
 
     return render(request, 'pqrs/crear.html', {
@@ -181,7 +181,7 @@ def exportar_excel_pqrsf(request):
     ws = wb.active
     ws.title = 'PQRSF'
 
-    headers = ['ID', 'Tipo', 'Descripción', 'Estado', 'Respuesta', 'Usuario', 'Leída', 'Fecha Creación']
+    headers = ['ID', 'Tipo', 'DescripciÃ³n', 'Estado', 'Respuesta', 'Usuario', 'LeÃ­da', 'Fecha CreaciÃ³n']
     header_fill = PatternFill(start_color='28A745', end_color='28A745', fill_type='solid')
     header_font = Font(color='FFFFFF', bold=True)
 
@@ -208,10 +208,9 @@ def exportar_excel_pqrsf(request):
             nombre_usuario = "Error: Usuario no encontrado"
         
         ws.cell(row=row, column=6, value=nombre_usuario)
-        ws.cell(row=row, column=7, value='Sí' if p.leida else 'No')
+        ws.cell(row=row, column=7, value='SÃ­' if p.leida else 'No')
         
         # Fecha con zona horaria local (Colombia)
-        fecha_local = localtime(p.create_at) if p.create_at else None
         ws.cell(row=row, column=8, value=p.create_at.strftime('%d/%m/%Y %H:%M') if p.create_at else '')
 
     # Auto-ajuste de columnas
@@ -237,7 +236,7 @@ def exportar_pdf_pqrsf(request):
     if not usuario_session:
         return redirect('login')
     
-    # filtros de la lista ──
+    # filtros de la lista â”€â”€
     filtro_tipo   = request.GET.get('tipo', '')
     filtro_estado = request.GET.get('estado', '')
     filtro_leida  = request.GET.get('leida', '')
@@ -267,7 +266,7 @@ def exportar_pdf_pqrsf(request):
     styles = getSampleStyleSheet()
     elements = []
 
-    # ── Estilos ──
+    # â”€â”€ Estilos â”€â”€
     title_style = ParagraphStyle(
         'CustomTitle',
         parent=styles['Title'],
@@ -293,7 +292,7 @@ def exportar_pdf_pqrsf(request):
         alignment=1,
     )
 
-    # ── Header con logo ──
+    # â”€â”€ Header con logo â”€â”€
     logo_path = os.path.join(settings.BASE_DIR, 'gestion', 'static', 'gestion', 'img', 'logo.png')
     if os.path.exists(logo_path):
         from reportlab.platypus import Image as RLImage
@@ -311,7 +310,7 @@ def exportar_pdf_pqrsf(request):
     else:
         elements.append(Paragraph('Reporte de PQRSF', title_style))
 
-    elements.append(Paragraph('SenaFOOD - Sistema de Gestión', subtitle_style))
+    elements.append(Paragraph('SenaFOOD - Sistema de GestiÃ³n', subtitle_style))
     elements.append(Paragraph(
         f'Generado el {timezone.now().strftime("%d/%m/%Y a las %H:%M")} '
         f'por {request.session.get("usuario_nombre", "Administrador")}',
@@ -319,25 +318,25 @@ def exportar_pdf_pqrsf(request):
     ))
     elements.append(Spacer(1, 6))
 
-    # ── Línea verde ──
+    # â”€â”€ LÃ­nea verde â”€â”€
     from reportlab.platypus import HRFlowable
     elements.append(HRFlowable(width="100%", thickness=2, color=colors.HexColor('#28A745')))
     elements.append(Spacer(1, 8))
 
-    # ── Estadísticas ──
+    # â”€â”€ EstadÃ­sticas â”€â”€
     base = PQRSF.objects.all() if rol == 'Administrador' else PQRSF.objects.filter(usuario=usuario_session)
     total        = base.count()
     pendientes   = base.filter(estado='Pendiente').count()
-    en_gestion   = base.filter(estado='En gestión').count()
+    en_gestion   = base.filter(estado='En gestiÃ³n').count()
     resueltas    = base.filter(estado='Resuelta').count()
     no_leidas    = base.filter(leida=False).count()
 
     stats_data = [[
         Paragraph(f'<b>Total:</b> {total}',             stat_style),
         Paragraph(f'<b>Pendientes:</b> {pendientes}',   stat_style),
-        Paragraph(f'<b>En gestión:</b> {en_gestion}',   stat_style),
+        Paragraph(f'<b>En gestiÃ³n:</b> {en_gestion}',   stat_style),
         Paragraph(f'<b>Resueltas:</b> {resueltas}',     stat_style),
-        Paragraph(f'<b>No leídas:</b> {no_leidas}',     stat_style),
+        Paragraph(f'<b>No leÃ­das:</b> {no_leidas}',     stat_style),
     ]]
     stats_table = Table(stats_data, colWidths=[148, 148, 148, 148, 148])
     stats_table.setStyle(TableStyle([
@@ -350,8 +349,8 @@ def exportar_pdf_pqrsf(request):
     elements.append(stats_table)
     elements.append(Spacer(1, 12))
 
-    # ── Tabla de datos ──
-    data = [['ID', 'Tipo', 'Estado', 'Usuario', 'Descripción', 'Leída', 'Fecha']]
+    # â”€â”€ Tabla de datos â”€â”€
+    data = [['ID', 'Tipo', 'Estado', 'Usuario', 'DescripciÃ³n', 'LeÃ­da', 'Fecha']]
 
     for p in pqrsf_list:
         try:
@@ -368,7 +367,7 @@ def exportar_pdf_pqrsf(request):
             p.estado,
             nombre_u,
             descripcion,
-            'Sí' if p.leida else 'No',
+            'SÃ­' if p.leida else 'No',
             fecha_fila,
         ])
 
@@ -390,13 +389,13 @@ def exportar_pdf_pqrsf(request):
     ]))
     elements.append(table)
 
-    # ── Footer ──
+    # â”€â”€ Footer â”€â”€
     def add_footer(canvas, doc):
         canvas.saveState()
         canvas.setFont('Helvetica', 8)
         canvas.setFillColor(colors.HexColor('#888888'))
         canvas.drawString(30, 15, 'SenaFOOD - Reporte de PQRSF')
-        canvas.drawRightString(landscape(A4)[0] - 30, 15, f'Página {doc.page}')
+        canvas.drawRightString(landscape(A4)[0] - 30, 15, f'PÃ¡gina {doc.page}')
         canvas.setStrokeColor(colors.HexColor('#28A745'))
         canvas.setLineWidth(1)
         canvas.line(30, 25, landscape(A4)[0] - 30, 25)
@@ -404,3 +403,4 @@ def exportar_pdf_pqrsf(request):
 
     doc.build(elements, onFirstPage=add_footer, onLaterPages=add_footer)
     return response
+
