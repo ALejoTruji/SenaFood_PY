@@ -54,15 +54,20 @@
             </div>
             {% endif %}
 
-            {% if orden.estado == 'pendiente' or orden.estado == 'enviada' %}
-            <div style="margin-bottom: 20px;">
+            <div style="display:flex; gap:10px; margin-bottom: 20px; flex-wrap:wrap;">
+                {% if orden.estado == 'pendiente' or orden.estado == 'enviada' %}
                 <a href="{% url 'editar_orden' orden.id_orden %}" 
                 style="background:#ffc107; color:#212529; padding:8px 16px; border-radius:20px; 
                         text-decoration:none; font-size:0.85rem; font-weight:600; display:inline-flex; align-items:center; gap:6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
                     <i class="fas fa-edit"></i> Corregir cantidades / Precios
                 </a>
+                {% endif %}
+                <a href="{% url 'exportar_pdf_orden' orden.id_orden %}"
+                style="background:#dc3545; color:#fff; padding:8px 16px; border-radius:20px;
+                        text-decoration:none; font-size:0.85rem; font-weight:600; display:inline-flex; align-items:center; gap:6px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                    <i class="fas fa-file-pdf"></i> Descargar PDF
+                </a>
             </div>
-            {% endif %}
 
             <table style="width:100%; border-collapse:collapse; font-size:0.85rem;">
                 <thead>

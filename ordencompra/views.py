@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.contrib import messages
 from django.core.mail import EmailMultiAlternatives
 from django.conf import settings
@@ -7,6 +7,16 @@ from django.db import transaction
 from .models import OrdenCompra, DetalleOrdenCompra
 from gestion.models import Usuario, Producto
 from proveedor.models import Proveedor
+
+import os
+import io
+from reportlab.lib.pagesizes import A4
+from reportlab.lib import colors
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.lib.units import cm
+from reportlab.platypus import (
+    SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer, HRFlowable, Image as RLImage
+)
 
 
 def sesion_requerida(view_func):
@@ -144,6 +154,208 @@ def detalle_orden(request, id_orden):
         'nombre_usuario': request.session.get('usuario_nombre', ''),
         'rol_usuario':    request.session.get('usuario_rol', ''),
     })
+
+
+@sesion_requerida
+@solo_admin
+def exportar_pdf_orden(request, id_orden):
+    """
+    Genera la orden de compra en PDF, formato factura (vertical), con los datos
+    de SenaFOOD como empresa emisora, los datos del proveedor y el detalle de productos.
+    """
+    orden    = get_object_or_404(OrdenCompra, pk=id_orden)
+    detalles = DetalleOrdenCompra.objects.filter(orden=orden).select_related('producto')
+
+    # ── Datos fijos de la empresa emisora ──
+    EMPRESA = {
+        'nombre':    'SenaFOOD',
+        'nit':       '800900500-1',
+        'direccion': 'Calle 65 # 13 - 68',
+        'telefono':  '4555544',
+    }
+
+    buffer = io.BytesIO()
+    doc = SimpleDocTemplate(
+        buffer, pagesize=A4,
+        leftMargin=2 * cm, rightMargin=2 * cm,
+        topMargin=1.5 * cm, bottomMargin=1.5 * cm,
+    )
+    styles = getSampleStyleSheet()
+    elements = []
+
+    title_style = ParagraphStyle(
+        'Title', parent=styles['Title'], fontSize=18,
+        textColor=colors.HexColor('#28A745'), fontName='Helvetica-Bold',
+        alignment=1, spaceAfter=2,
+    )
+    subtitle_style = ParagraphStyle(
+        'Subtitle', parent=styles['Normal'], fontSize=9,
+        textColor=colors.HexColor('#666666'), alignment=1,
+    )
+    label_style = ParagraphStyle(
+        'Label', parent=styles['Normal'], fontSize=8.5,
+        textColor=colors.HexColor('#888888'),
+    )
+    value_style = ParagraphStyle(
+        'Value', parent=styles['Normal'], fontSize=10,
+        textColor=colors.HexColor('#222222'), fontName='Helvetica-Bold',
+        spaceAfter=2,
+    )
+
+    # ── Encabezado: logo + nombre de la empresa ──
+    logo_path = os.path.join(settings.BASE_DIR, 'gestion', 'static', 'gestion', 'img', 'logo.png')
+    if os.path.exists(logo_path):
+        logo = RLImage(logo_path, width=60, height=60)
+        header_data = [[
+            logo,
+            Paragraph(
+                f"<b>{EMPRESA['nombre']}</b><br/>"
+                f"NIT: {EMPRESA['nit']}<br/>"
+                f"{EMPRESA['direccion']}<br/>"
+                f"Tel: {EMPRESA['telefono']}",
+                ParagraphStyle('EmpresaInfo', parent=styles['Normal'], fontSize=9,
+                                textColor=colors.HexColor('#444444'), leading=12),
+            ),
+            Paragraph(
+                f"<b>ORDEN DE COMPRA</b><br/>"
+                f"N° {orden.id_orden:06d}<br/>"
+                f"Fecha: {orden.fecha.strftime('%d/%m/%Y')}",
+                ParagraphStyle('OrdenInfo', parent=styles['Normal'], fontSize=9,
+                                textColor=colors.HexColor('#28A745'), alignment=2, leading=12),
+            ),
+        ]]
+        header_table = Table(header_data, colWidths=[70, 280, 180])
+        header_table.setStyle(TableStyle([
+            ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+            ('ALIGN', (0, 0), (0, 0), 'LEFT'),
+            ('ALIGN', (1, 0), (1, 0), 'LEFT'),
+            ('ALIGN', (2, 0), (2, 0), 'RIGHT'),
+        ]))
+        elements.append(header_table)
+    else:
+        elements.append(Paragraph(EMPRESA['nombre'], title_style))
+        elements.append(Paragraph(f"Orden de Compra N° {orden.id_orden:06d}", subtitle_style))
+
+    elements.append(Spacer(1, 10))
+    elements.append(HRFlowable(width="100%", thickness=2, color=colors.HexColor('#28A745')))
+    elements.append(Spacer(1, 14))
+
+    # ── Datos del proveedor ──
+    proveedor = orden.id_proveedor
+    proveedor_data = [[
+        Paragraph('<b>PROVEEDOR</b>', label_style),
+    ], [
+        Paragraph(proveedor.nombre or '—', value_style),
+    ], [
+        Paragraph(f"NIT: {proveedor.nit or '—'}", subtitle_style),
+    ], [
+        Paragraph(f"Email: {proveedor.email or '—'}", subtitle_style),
+    ], [
+        Paragraph(f"Teléfono: {proveedor.telefono or '—'}", subtitle_style),
+    ], [
+        Paragraph(f"Dirección: {proveedor.direccion or '—'}", subtitle_style),
+    ]]
+    proveedor_table = Table(proveedor_data, colWidths=[530])
+    proveedor_table.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, -1), colors.HexColor('#f9fff9')),
+        ('BOX', (0, 0), (-1, -1), 0.75, colors.HexColor('#a8d5b5')),
+        ('LEFTPADDING', (0, 0), (-1, -1), 12),
+        ('TOPPADDING', (0, 0), (-1, -1), 4),
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 4),
+    ]))
+    elements.append(proveedor_table)
+    elements.append(Spacer(1, 6))
+
+    # ── Creada por / estado ──
+    creado_por = f"{orden.id_usuario.nombre} {orden.id_usuario.apellido}" if orden.id_usuario else '—'
+    info_data = [[
+        Paragraph(f"<b>Creada por:</b> {creado_por}", subtitle_style),
+        Paragraph(f"<b>Estado:</b> {orden.get_estado_display()}", subtitle_style),
+    ]]
+    info_table = Table(info_data, colWidths=[265, 265])
+    elements.append(info_table)
+    elements.append(Spacer(1, 14))
+
+    # ── Observaciones ──
+    if orden.observaciones:
+        obs_style = ParagraphStyle('Obs', parent=styles['Normal'], fontSize=9,
+                                    textColor=colors.HexColor('#444444'))
+        obs_table = Table(
+            [[Paragraph(f"<b>Observaciones:</b> {orden.observaciones}", obs_style)]],
+            colWidths=[530],
+        )
+        obs_table.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (-1, -1), colors.HexColor('#fffbea')),
+            ('BOX', (0, 0), (-1, -1), 0.5, colors.HexColor('#ffe9a8')),
+            ('LEFTPADDING', (0, 0), (-1, -1), 12),
+            ('TOPPADDING', (0, 0), (-1, -1), 6),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 6),
+        ]))
+        elements.append(obs_table)
+        elements.append(Spacer(1, 14))
+
+    # ── Tabla de productos ──
+    data = [['#', 'Producto', 'Cantidad', 'Precio unit.', 'Subtotal']]
+    for i, d in enumerate(detalles, 1):
+        data.append([
+            str(i),
+            d.nombre_producto,
+            str(d.cantidad),
+            f'${float(d.precio_unitario):,.0f}',
+            f'${float(d.subtotal):,.0f}',
+        ])
+
+    tabla = Table(data, repeatRows=1, colWidths=[25, 230, 70, 100, 105])
+    tabla.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#28A745')),
+        ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
+        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+        ('FONTSIZE', (0, 0), (-1, 0), 9),
+        ('FONTSIZE', (0, 1), (-1, -1), 8.5),
+        ('ALIGN', (0, 0), (0, -1), 'CENTER'),
+        ('ALIGN', (2, 0), (-1, -1), 'CENTER'),
+        ('ALIGN', (1, 0), (1, -1), 'LEFT'),
+        ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+        ('ROWBACKGROUNDS', (0, 1), (-1, -1), [colors.white, colors.HexColor('#f0fff4')]),
+        ('GRID', (0, 0), (-1, -1), 0.5, colors.HexColor('#a8d5b5')),
+        ('TOPPADDING', (0, 0), (-1, -1), 6),
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 6),
+    ]))
+    elements.append(tabla)
+    elements.append(Spacer(1, 4))
+
+    # ── Total ──
+    total_data = [[
+        Paragraph('<b>TOTAL</b>', ParagraphStyle('TotalLabel', parent=styles['Normal'],
+                                                    fontSize=11, alignment=2)),
+        Paragraph(f"<b>${float(orden.total):,.0f}</b>",
+                    ParagraphStyle('TotalValue', parent=styles['Normal'], fontSize=13,
+                                    textColor=colors.HexColor('#28A745'), alignment=2)),
+    ]]
+    total_table = Table(total_data, colWidths=[425, 105])
+    total_table.setStyle(TableStyle([
+        ('TOPPADDING', (0, 0), (-1, -1), 8),
+        ('LINEABOVE', (0, 0), (-1, 0), 1, colors.HexColor('#28A745')),
+    ]))
+    elements.append(total_table)
+
+    def footer(canvas, doc_):
+        canvas.saveState()
+        canvas.setFont('Helvetica', 8)
+        canvas.setFillColor(colors.HexColor('#888888'))
+        canvas.drawString(2 * cm, 1 * cm, 'SenaFOOD - Orden de Compra')
+        canvas.drawRightString(A4[0] - 2 * cm, 1 * cm, f'Página {doc_.page}')
+        canvas.setStrokeColor(colors.HexColor('#28A745'))
+        canvas.setLineWidth(1)
+        canvas.line(2 * cm, 1.3 * cm, A4[0] - 2 * cm, 1.3 * cm)
+        canvas.restoreState()
+
+    doc.build(elements, onFirstPage=footer, onLaterPages=footer)
+    buffer.seek(0)
+    return HttpResponse(
+        buffer, content_type='application/pdf',
+        headers={'Content-Disposition': f'attachment; filename="OrdenCompra_{orden.id_orden:06d}.pdf"'},
+    )
 
 
 @sesion_requerida
