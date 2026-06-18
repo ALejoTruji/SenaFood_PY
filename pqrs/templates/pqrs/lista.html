@@ -379,6 +379,82 @@
         font-size: 0.82rem;
         color: #555;
     }
+
+    /* ===== RESPONSIVE: tablets y móviles ===== */
+    @media (max-width: 768px) {
+        .page-title {
+            font-size: 1.3rem;
+        }
+
+        .card-sena {
+            padding: 1rem;
+        }
+
+        /* Toolbar: pasa de 3 columnas a apilado */
+        .toolbar {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .toolbar-left {
+            justify-content: center;
+        }
+
+        .title-list {
+            order: -1;
+            margin-bottom: 4px;
+        }
+
+        .toolbar > .d-flex {
+            flex-direction: column;
+            align-items: stretch !important;
+            gap: 8px !important;
+        }
+
+        .search-wrapper {
+            justify-content: center;
+        }
+
+        .search-wrapper input {
+            width: 100%;
+            flex: 1;
+        }
+
+        .btn-nuevo {
+            justify-content: center;
+            margin-top: 0;
+        }
+
+        /* Filtros: cada control ocupa toda la fila */
+        .filtros-wrapper {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .filtro-select,
+        .btn-filtrar,
+        .btn-limpiar {
+            width: 100%;
+            justify-content: center;
+        }
+
+        /* Tabla: scroll horizontal suave, ya envuelta en .table-responsive */
+        .table-responsive {
+            -webkit-overflow-scrolling: touch;
+        }
+
+        #tablaPQRSF {
+            font-size: 0.78rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        /* Tarjetas resumen: 2 por fila en vez de forzar 1 */
+        div[style*="display:flex; gap:12px; flex-wrap:wrap"] > div {
+            min-width: calc(50% - 6px) !important;
+            flex: 1 1 calc(50% - 6px) !important;
+        }
+    }
 </style>
 
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
