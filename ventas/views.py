@@ -389,7 +389,7 @@ def exportar_excel_ventas(request):
         cell.alignment = centro
 
     for i, v in enumerate(ventas, 1):
-        fecha = localtime(v.fecha_entrega).strftime('%d/%m/%Y %H:%M') if v.fecha_entrega else '—'
+        fecha = v.fecha_entrega.strftime('%d/%m/%Y %H:%M') if v.fecha_entrega else '—'
         tiempo = ''
         if v.fecha_confirmacion and v.fecha_entrega:
             tiempo = round((v.fecha_entrega - v.fecha_confirmacion).total_seconds() / 60, 1)
