@@ -688,25 +688,23 @@
 <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
 
 <script>
-    $(document).ready(function () {
-        var esMobil = window.innerWidth < 600 
-           || window.screen.width < 600
-           || (window.innerWidth / window.devicePixelRatio) < 400;
+        $(document).ready(function () {
+        var esMobil = window.innerWidth / window.devicePixelRatio < 400
+                || window.screen.width < 600;
 
         var table = $('#tablaPQRSF').DataTable({
             "destroy": true,
             "pageLength": 10,
             "order": [[0, "desc"]],
             "columnDefs": [
-                // Siempre visibles: ID, Tipo, Descripción, Estado, Acciones
-                { "targets": [0], "visible": true,  "width": "40px" },
-                { "targets": [1], "visible": true,  "width": "70px" },
-                { "targets": [2], "visible": true  },  // Descripción
-                { "targets": [3], "visible": !esMobil }, // Respuesta — oculta en móvil
-                { "targets": [4], "visible": true  },  // Estado
-                { "targets": [5], "visible": !esMobil }, // Leída — oculta en móvil
-                { "targets": [6], "visible": !esMobil }, // Fecha — oculta en móvil
-                { "targets": [7], "visible": true,  "orderable": false } // Acciones
+                { "targets": [0], "visible": !esMobil },            // ID — oculto en móvil
+                { "targets": [1], "visible": true, "width": "70px" }, // Tipo
+                { "targets": [2], "visible": true },                  // Descripción — ocupa el resto
+                { "targets": [3], "visible": !esMobil },             // Respuesta — oculta
+                { "targets": [4], "visible": true, "width": "80px" }, // Estado
+                { "targets": [5], "visible": !esMobil },             // Leída — oculta
+                { "targets": [6], "visible": !esMobil },             // Fecha — oculta
+                { "targets": [7], "visible": true, "width": "50px", "orderable": false } // Acciones
             ],
             "language": {
                 "info": "Mostrando _START_ a _END_ de _TOTAL_ registros",
