@@ -207,30 +207,21 @@
 
 <script>
 $(document).ready(function () {
-
-    // Detectar móvil por User-Agent (funciona en emulador y físico)
-    var esMobil = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent)
-                || window.innerWidth <= 768;
-
     var table = $('#tablaNotif').DataTable({
         "pageLength": 10,
         "order": [[0, "desc"]],
+        "scrollX": true,
         "language": {
             "info": "Mostrando _START_ a _END_ de _TOTAL_ registros",
             "infoEmpty": "Sin registros",
             "paginate": { "previous": "Anterior", "next": "Siguiente" }
         },
         "columnDefs": [
-            // Columna # — estrecha
-            { "targets": [0], "width": esMobil ? "28px" : "50px" },
-            // Columna Tipo — fija
-            { "targets": [1], "width": esMobil ? "58px" : "80px" },
-            // Columna Mensaje — ocupa el resto
-            { "targets": [2], "width": "" },
-            // Columna Fecha — OCULTA en móvil, solo DataTables la controla
-            { "targets": [3], "visible": !esMobil },
-            // Columna Acciones — OCULTA en móvil, tap en fila la reemplaza
-            { "targets": [4], "visible": !esMobil }
+            { "targets": [0], "width": "40px" },
+            { "targets": [1], "width": "80px" },
+            { "targets": [2], "width": "200px" },
+            { "targets": [3], "width": "100px" },
+            { "targets": [4], "width": "100px" }
         ],
         "rowCallback": function (row, data, index) {
             if ($(row).hasClass('no-leida')) {
@@ -240,22 +231,9 @@ $(document).ready(function () {
         }
     });
 
-    // Buscador personalizado
     $('#searchNotif').on('keyup', function () {
         table.search(this.value).draw();
     });
-
-    // En móvil: tap en fila ejecuta la acción (reemplaza columna Acciones)
-    if (esMobil) {
-        $('#tablaNotif tbody').on('click', 'tr', function () {
-            var enlace = $(this).find('a.btn-accion-ver').attr('href');
-            if (enlace) window.location.href = enlace;
-        });
-        // Indicar que las filas son clickeables
-        $('<style>#tablaNotif tbody tr{cursor:pointer}'
-          + '#tablaNotif tbody tr:active td{background-color:#d4edda!important}</style>')
-            .appendTo('head');
-    }
 });
 </script>
 {% endblock %}
