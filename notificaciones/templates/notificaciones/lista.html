@@ -460,15 +460,23 @@
 
         // En móvil: tap en la fila navega al enlace de acciones
         if (esMobil) {
-            $('#tablaNotif tbody').on('click', 'tr', function () {
-                var btn = $(this).find('.btn-accion-ver').first();
-                if (btn.length) {
-                    window.location.href = btn.attr('href');
-                }
-            });
+            // Esperar a que DataTables termine de renderizar
+            setTimeout(function () {
+                $('#tablaNotif tbody').off('click').on('click', 'tr', function () {
+                    var btn = $(this).find('a.btn-accion-ver').first();
+                    if (btn.length) {
+                        window.location.href = btn.attr('href');
+                    } else {
+                        // Si no tiene acción, resaltar brevemente la fila
+                        $(this).css('background-color', '#d4edda');
+                        setTimeout(function () {}, 300);
+                    }
+                });
+            }, 500);
 
-            // Indicar visualmente que las filas son clickeables
-            $('#tablaNotif tbody tr').css('cursor', 'pointer');
+            // Estilo cursor pointer via CSS en móvil
+            $('<style>#tablaNotif tbody tr { cursor: pointer; } #tablaNotif tbody tr:active { background-color: #d4edda !important; }</style>')
+                .appendTo('head');
         }
     });
 </script>
