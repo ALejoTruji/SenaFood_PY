@@ -438,14 +438,6 @@
             justify-content: center;
         }
 
-        /* Tabla: scroll horizontal suave, ya envuelta en .table-responsive */
-        .table-responsive {
-            -webkit-overflow-scrolling: touch;
-        }
-
-        #tablaPQRSF {
-            font-size: 0.78rem;
-        }
     }
 
     @media (max-width: 480px) {
@@ -697,17 +689,22 @@
 
 <script>
     $(document).ready(function () {
+        var esMobil = window.innerWidth < 600;
+
         var table = $('#tablaPQRSF').DataTable({
             "destroy": true,
             "pageLength": 10,
             "order": [[0, "desc"]],
-            "scrollX": true,
             "columnDefs": [
-                { "orderable": false, "targets": -1 },
-                { "targets": [0], "width": "40px" },
-                { "targets": [1], "width": "80px" },
-                { "targets": [2], "width": "150px" },
-                { "targets": [3], "width": "150px" }
+                // Siempre visibles: ID, Tipo, Descripción, Estado, Acciones
+                { "targets": [0], "visible": true,  "width": "40px" },
+                { "targets": [1], "visible": true,  "width": "70px" },
+                { "targets": [2], "visible": true  },  // Descripción
+                { "targets": [3], "visible": !esMobil }, // Respuesta — oculta en móvil
+                { "targets": [4], "visible": true  },  // Estado
+                { "targets": [5], "visible": !esMobil }, // Leída — oculta en móvil
+                { "targets": [6], "visible": !esMobil }, // Fecha — oculta en móvil
+                { "targets": [7], "visible": true,  "orderable": false } // Acciones
             ],
             "language": {
                 "info": "Mostrando _START_ a _END_ de _TOTAL_ registros",
@@ -715,6 +712,7 @@
                 "paginate": { "previous": "Anterior", "next": "Siguiente" }
             }
         });
+
         $('#searchPQRSF').on('keyup', function () {
             table.search(this.value).draw();
         });
