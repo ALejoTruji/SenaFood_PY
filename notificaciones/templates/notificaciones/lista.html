@@ -412,6 +412,8 @@
 
 <script>
     $(document).ready(function () {
+        var esMobil = window.innerWidth <= 768;
+
         var table = $('#tablaNotif').DataTable({
             "pageLength": 10,
             "order": [[0, "desc"]],
@@ -420,6 +422,23 @@
                 "infoEmpty": "Sin registros",
                 "paginate": { "previous": "Anterior", "next": "Siguiente" }
             },
+            // Ocultar columna Fecha (índice 3) en móvil
+            "columnDefs": [
+                {
+                    "targets": [3],
+                    "visible": !esMobil
+                },
+                // Columna # más estrecha en móvil
+                {
+                    "targets": [0],
+                    "width": esMobil ? "30px" : "50px"
+                },
+                // Columna Acciones más estrecha en móvil
+                {
+                    "targets": [4],
+                    "width": esMobil ? "60px" : "120px"
+                }
+            ],
             "rowCallback": function (row, data, index) {
                 if ($(row).hasClass('no-leida')) {
                     $('td', row).css('background-color', '#fffde7');
@@ -427,6 +446,7 @@
                 }
             }
         });
+
         $('#searchNotif').on('keyup', function () {
             table.search(this.value).draw();
         });
