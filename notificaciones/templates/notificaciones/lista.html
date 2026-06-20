@@ -295,10 +295,9 @@
 
         /* Columna mensaje truncada */
         #tablaNotif td:nth-child(3) {
-            max-width: 120px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+            white-space: normal !important;
+            word-break: break-word;
+            min-width: 100px;
         }
 
         /* Ocultar columna Fecha en móvil para ganar espacio */
