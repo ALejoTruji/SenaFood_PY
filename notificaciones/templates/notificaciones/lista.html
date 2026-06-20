@@ -411,7 +411,8 @@
 
 <script>
     $(document).ready(function () {
-        var esMobil = window.innerWidth <= 768;
+        var esMobil = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent) 
+            || window.innerWidth <= 768;
 
         var table = $('#tablaNotif').DataTable({
             "pageLength": 10,
