@@ -427,15 +427,21 @@
                     "targets": [3],
                     "visible": !esMobil
                 },
-                // Columna # más estrecha en móvil
                 {
                     "targets": [0],
-                    "width": esMobil ? "30px" : "50px"
+                    "width": esMobil ? "28px" : "50px"
                 },
-                // Columna Acciones más estrecha en móvil
+                {
+                    "targets": [1],
+                    "width": esMobil ? "55px" : "80px"
+                },
+                {
+                    "targets": [2],
+                    "className": "col-mensaje"
+                },
                 {
                     "targets": [4],
-                    "width": esMobil ? "60px" : "120px"
+                    "width": esMobil ? "55px" : "120px"
                 }
             ],
             "rowCallback": function (row, data, index) {
