@@ -239,12 +239,91 @@
     #tablaNotif tbody tr.no-leida:hover td {
         background-color: #ffe69c !important;
     }
+
+    /* ── RESPONSIVE MÓVIL ─────────────────────────────── */
+    @media (max-width: 768px) {
+
+        /* Título más pequeño */
+        .page-title {
+            font-size: 1.2rem;
+        }
+
+        /* Toolbar en columna */
+        .toolbar {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .title-list {
+            text-align: left;
+            font-size: 0.95rem;
+        }
+
+        /* Buscador full width */
+        .search-wrapper {
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .search-wrapper input {
+            width: 100%;
+        }
+
+        /* Card sin tanto padding */
+        .card-sena {
+            padding: 0.75rem;
+        }
+
+        /* Texto más pequeño en tabla */
+        .table tbody td,
+        .table-sena-header th {
+            font-size: 0.72rem;
+            padding: 5px 4px;
+        }
+
+        /* Badges más compactos */
+        .badge-tipo {
+            padding: 2px 7px;
+            font-size: 0.68rem;
+        }
+
+        /* Botones más pequeños */
+        .btn-accion-ver {
+            padding: 3px 8px;
+            font-size: 0.70rem;
+        }
+
+        /* Columna mensaje truncada */
+        #tablaNotif td:nth-child(3) {
+            max-width: 120px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Ocultar columna Fecha en móvil para ganar espacio */
+        #tablaNotif th:nth-child(4),
+        #tablaNotif td:nth-child(4) {
+            display: none;
+        }
+
+        /* Paginación centrada */
+        .dataTables_wrapper .dataTables_paginate {
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .dataTables_wrapper .dataTables_info {
+            text-align: center;
+            font-size: 0.75rem;
+        }
+    }
 </style>
 
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
 
 <div class="container-fluid mt-4">
-    <h4 class="page-title"></i>Notificaciones</h4>
+    <h4 class="page-title">Notificaciones</h4>
 
     <div class="card-sena">
 
