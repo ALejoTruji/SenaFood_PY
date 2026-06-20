@@ -3,6 +3,29 @@
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'catalogo/css/styles.css' %}">
+<style>
+@media (max-width: 600px) {
+    .carrito-grid {
+        grid-template-columns: 1fr !important;
+    }
+    .carrito-item {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+    .carrito-img, .carrito-img-placeholder {
+        width: 60px !important;
+        height: 60px !important;
+    }
+    .carrito-subtotal {
+        width: 100%;
+        text-align: right;
+    }
+    .btn-pagar {
+        font-size: 0.85rem !important;
+        padding: 10px !important;
+    }
+}
+</style>
 {% endblock %}
 
 {% block content %}
@@ -23,8 +46,7 @@
                     color:white; border-radius:8px; padding:10px 16px;
                     font-size:0.85rem; display:flex; align-items:center;
                     gap:8px; margin-bottom:8px;">
-                <i
-                    class="fas fa-{% if message.tags == 'success' %}check-circle{% else %}exclamation-triangle{% endif %}"></i>
+                <i class="fas fa-{% if message.tags == 'success' %}check-circle{% else %}exclamation-triangle{% endif %}"></i>
                 {{ message }}
             </div>
             {% endfor %}
@@ -32,7 +54,8 @@
         {% endif %}
 
         {% if detalles %}
-        <div style="display:grid; grid-template-columns:1fr 320px; gap:24px; align-items:start;">
+        <div class="carrito-grid"
+             style="display:grid; grid-template-columns:1fr 320px; gap:24px; align-items:start;">
 
             <!-- Items -->
             <div class="carrito-card">
@@ -100,7 +123,7 @@
                 </form>
 
                 <!-- Nequi -->
-                <form method="POST" action="{% url 'confirmar_pedido' %}" style="margin-bottom:16px;">
+                <form method="POST" action="{% url 'confirmar_pedido' %}" style="margin-bottom:10px;">
                     {% csrf_token %}
                     <input type="hidden" name="metodo_pago" value="nequi">
                     <button type="submit" class="btn-pagar" style="background:#2d1b69;">
