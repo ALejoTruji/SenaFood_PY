@@ -422,39 +422,54 @@
                 "paginate": { "previous": "Anterior", "next": "Siguiente" }
             },
             // Ocultar columna Fecha (índice 3) en móvil
-            "columnDefs": [
-                {
-                    "targets": [3],
-                    "visible": !esMobil
-                },
-                {
-                    "targets": [0],
-                    "width": esMobil ? "28px" : "50px"
-                },
-                {
-                    "targets": [1],
-                    "width": esMobil ? "55px" : "80px"
-                },
-                {
-                    "targets": [2],
-                    "className": "col-mensaje"
-                },
-                {
-                    "targets": [4],
-                    "width": esMobil ? "55px" : "120px"
-                }
-            ],
-            "rowCallback": function (row, data, index) {
-                if ($(row).hasClass('no-leida')) {
-                    $('td', row).css('background-color', '#fffde7');
-                    $('td', row).css('font-weight', '600');
-                }
+        "columnDefs": [
+            {
+                // Ocultar Fecha en móvil
+                "targets": [3],
+                "visible": !esMobil
+            },
+            {
+                // Ocultar Acciones en móvil (el tap en la fila la reemplaza)
+                "targets": [4],
+                "visible": !esMobil
+            },
+            {
+                "targets": [0],
+                "width": esMobil ? "30px" : "50px"
+            },
+            {
+                "targets": [1],
+                "width": esMobil ? "60px" : "80px"
+            },
+            {
+                "targets": [2],
+                "className": "col-mensaje"
             }
+        ],
+        "rowCallback": function (row, data, index) {
+            if ($(row).hasClass('no-leida')) {
+                $('td', row).css('background-color', '#fffde7');
+                $('td', row).css('font-weight', '600');
+            }
+        }
         });
 
         $('#searchNotif').on('keyup', function () {
             table.search(this.value).draw();
         });
+
+        // En móvil: tap en la fila navega al enlace de acciones
+        if (esMobil) {
+            $('#tablaNotif tbody').on('click', 'tr', function () {
+                var btn = $(this).find('.btn-accion-ver').first();
+                if (btn.length) {
+                    window.location.href = btn.attr('href');
+                }
+            });
+
+            // Indicar visualmente que las filas son clickeables
+            $('#tablaNotif tbody tr').css('cursor', 'pointer');
+        }
     });
 </script>
 {% endblock %}
