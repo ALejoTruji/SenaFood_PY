@@ -210,7 +210,7 @@ $(document).ready(function () {
 
     // Detectar móvil por User-Agent (funciona en emulador y físico)
     var esMobil = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent)
-                  || window.innerWidth <= 768;
+                || window.innerWidth <= 768;
 
     var table = $('#tablaNotif').DataTable({
         "pageLength": 10,
