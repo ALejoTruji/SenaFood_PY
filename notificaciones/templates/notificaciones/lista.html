@@ -5,317 +5,119 @@
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
 
-    body,
-    .container-fluid {
-        font-family: 'Poppins', sans-serif;
-    }
+    body, .container-fluid { font-family: 'Poppins', sans-serif; }
 
     .page-title {
-        color: #28a745;
-        font-weight: 700;
-        font-size: 1.6rem;
-        margin-bottom: 1.2rem;
+        color: #28a745; font-weight: 700;
+        font-size: 1.6rem; margin-bottom: 1.2rem;
     }
-
     .card-sena {
-        border-radius: 10px;
-        border: 1px solid #d4edda;
-        box-shadow: 0 2px 12px rgba(40, 167, 69, 0.07);
-        background-color: white;
-        padding: 1.5rem;
+        border-radius: 10px; border: 1px solid #d4edda;
+        box-shadow: 0 2px 12px rgba(40,167,69,0.07);
+        background-color: white; padding: 1.5rem;
     }
-
     .toolbar {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 1rem;
-        flex-wrap: wrap;
-        gap: 0.5rem;
+        display: flex; justify-content: space-between;
+        align-items: center; margin-bottom: 1rem;
+        flex-wrap: wrap; gap: 0.5rem;
     }
-
     .title-list {
-        color: #d35400;
-        font-weight: 700;
-        font-size: 1.1rem;
-        text-align: center;
-        flex: 1;
+        color: #d35400; font-weight: 700;
+        font-size: 1.1rem; text-align: center; flex: 1;
     }
-
     .search-wrapper {
-        display: flex;
-        align-items: center;
-        background-color: #28a745;
-        border-radius: 20px;
-        padding: 4px 12px;
-        gap: 8px;
+        display: flex; align-items: center;
+        background-color: #28a745; border-radius: 20px;
+        padding: 4px 12px; gap: 8px;
     }
-
-    .search-wrapper label {
-        color: white;
-        font-size: 0.82rem;
-        margin: 0;
-    }
-
+    .search-wrapper label { color: white; font-size: 0.82rem; margin: 0; }
     .search-wrapper input {
-        background: transparent;
-        border: none;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.6);
-        color: white;
-        font-size: 0.85rem;
-        outline: none;
-        width: 140px;
-        padding: 2px 4px;
+        background: transparent; border: none;
+        border-bottom: 1px solid rgba(255,255,255,0.6);
+        color: white; font-size: 0.85rem; outline: none;
+        width: 140px; padding: 2px 4px;
     }
+    .search-wrapper input::placeholder { color: rgba(255,255,255,0.7); }
 
-    .search-wrapper input::placeholder {
-        color: rgba(255, 255, 255, 0.7);
-    }
-
-    .table-sena-header {
-        background-color: #28a745 !important;
-        color: white !important;
-    }
-
+    .table-sena-header { background-color: #28a745 !important; color: white !important; }
     .table-sena-header th {
-        font-weight: 600;
-        font-size: 0.82rem;
-        border: none !important;
-        text-align: center;
-        vertical-align: middle;
-        padding: 10px 8px;
-        white-space: nowrap;
+        font-weight: 600; font-size: 0.82rem; border: none !important;
+        text-align: center; vertical-align: middle;
+        padding: 10px 8px; white-space: nowrap;
     }
+    .table tbody td { vertical-align: middle; font-size: 0.85rem; padding: 7px 8px; }
+    .table tbody tr:hover { background-color: #f0fff4; }
 
-    .table tbody td {
-        vertical-align: middle;
-        font-size: 0.85rem;
-        padding: 7px 8px;
-    }
-
-    .table tbody tr:hover {
-        background-color: #f0fff4;
-    }
-
-    #tablaNotif {
-        border: 2px solid #28a745 !important;
-        border-collapse: collapse;
-    }
-
-    #tablaNotif thead th {
-        border: 1px solid #218838 !important;
-    }
-
-    #tablaNotif tbody td {
-        border: 1px solid #a8d5b5 !important;
-    }
+    #tablaNotif { border: 2px solid #28a745 !important; border-collapse: collapse; }
+    #tablaNotif thead th { border: 1px solid #218838 !important; }
+    #tablaNotif tbody td { border: 1px solid #a8d5b5 !important; }
 
     .badge-tipo {
-        padding: 3px 12px;
-        border-radius: 20px;
-        font-size: 0.75rem;
-        font-weight: 500;
-        display: inline-block;
+        padding: 3px 12px; border-radius: 20px;
+        font-size: 0.75rem; font-weight: 500; display: inline-block;
     }
-
-    .badge-pqrsf {
-        background-color: #6f42c1;
-        color: white;
-    }
-
-    .badge-stock {
-        background-color: #fd7e14;
-        color: white;
-    }
-
-    .badge-sistema {
-        background-color: #17a2b8;
-        color: white;
-    }
-
-    .badge-leida-si {
-        background-color: #28a745;
-        color: white;
-        padding: 3px 12px;
-        border-radius: 20px;
-        font-size: 0.75rem;
-        font-weight: 500;
-    }
-
-    .badge-leida-no {
-        background-color: #dc3545;
-        color: white;
-        padding: 3px 12px;
-        border-radius: 20px;
-        font-size: 0.75rem;
-        font-weight: 500;
-    }
+    .badge-pqrsf  { background-color: #6f42c1; color: white; }
+    .badge-stock  { background-color: #fd7e14; color: white; }
+    .badge-sistema{ background-color: #17a2b8; color: white; }
 
     .btn-accion-ver {
-        background-color: #28a745;
-        color: white;
-        border: none;
-        padding: 4px 14px;
-        border-radius: 5px;
-        font-size: 0.78rem;
-        font-weight: 500;
-        text-decoration: none;
-        display: inline-flex;
-        align-items: center;
-        gap: 4px;
+        background-color: #28a745; color: white; border: none;
+        padding: 4px 14px; border-radius: 5px; font-size: 0.78rem;
+        font-weight: 500; text-decoration: none;
+        display: inline-flex; align-items: center; gap: 4px;
         transition: background 0.2s;
     }
+    .btn-accion-ver:hover { background-color: #218838; color: white; }
 
-    .btn-accion-ver:hover {
-        background-color: #218838;
-        color: white;
-    }
-
-    #tablaNotif {
-        width: 100% !important;
-        margin: 0 auto;
-    }
-
-    .dataTables_wrapper,
-    .dataTables_scroll,
-    .dataTables_scrollBody {
-        width: 100% !important;
-    }
-
-    .dataTables_wrapper {
-        width: 100%;
-    }
-
-    div.dataTables_filter,
-    .dataTables_wrapper .dataTables_length {
-        display: none;
-    }
+    #tablaNotif { width: 100% !important; margin: 0 auto; }
+    .dataTables_wrapper, .dataTables_scroll, .dataTables_scrollBody { width: 100% !important; }
+    div.dataTables_filter, .dataTables_wrapper .dataTables_length { display: none; }
 
     .dataTables_wrapper .dataTables_paginate {
-        display: flex;
-        align-items: center;
-        justify-content: flex-end;
-        gap: 2px;
-        margin-top: 0.8rem;
+        display: flex; align-items: center;
+        justify-content: flex-end; gap: 2px; margin-top: 0.8rem;
     }
-
     .dataTables_wrapper .dataTables_paginate .paginate_button {
-        border: 1px solid #dee2e6 !important;
-        border-radius: 4px !important;
-        padding: 4px 10px !important;
-        font-size: 0.82rem !important;
-        color: #333 !important;
-        background: white !important;
-        margin: 0 2px !important;
-        cursor: pointer;
-        display: inline-block;
+        border: 1px solid #dee2e6 !important; border-radius: 4px !important;
+        padding: 4px 10px !important; font-size: 0.82rem !important;
+        color: #333 !important; background: white !important;
+        margin: 0 2px !important; cursor: pointer; display: inline-block;
     }
-
     .dataTables_wrapper .dataTables_paginate .paginate_button.current,
     .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
-        background: #28a745 !important;
-        border-color: #28a745 !important;
-        color: white !important;
-        font-weight: 600;
+        background: #28a745 !important; border-color: #28a745 !important;
+        color: white !important; font-weight: 600;
     }
-
     .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
-        background: #e8f5e9 !important;
-        border-color: #28a745 !important;
-        color: #28a745 !important;
+        background: #e8f5e9 !important; border-color: #28a745 !important; color: #28a745 !important;
     }
-
-    .dataTables_wrapper .dataTables_info {
-        font-size: 0.82rem;
-        color: #555;
-    }
+    .dataTables_wrapper .dataTables_info { font-size: 0.82rem; color: #555; }
 
     #tablaNotif tbody tr.no-leida td {
-        background-color: #fff3cd !important;
-        font-weight: 600;
+        background-color: #fff3cd !important; font-weight: 600;
         border-left: 3px solid #ffc107 !important;
     }
+    #tablaNotif tbody tr.no-leida:hover td { background-color: #ffe69c !important; }
 
-    #tablaNotif tbody tr.no-leida:hover td {
-        background-color: #ffe69c !important;
-    }
-
-    /* ── RESPONSIVE MÓVIL ─────────────────────────────── */
+    /* ── RESPONSIVE MÓVIL ── */
     @media (max-width: 768px) {
-
-        /* Título más pequeño */
-        .page-title {
-            font-size: 1.2rem;
-        }
-
-        /* Toolbar en columna */
-        .toolbar {
-            flex-direction: column;
-            align-items: flex-start;
-        }
-
-        .title-list {
-            text-align: left;
-            font-size: 0.95rem;
-        }
-
-        /* Buscador full width */
-        .search-wrapper {
-            width: 100%;
-            box-sizing: border-box;
-        }
-
-        .search-wrapper input {
-            width: 100%;
-        }
-
-        /* Card sin tanto padding */
-        .card-sena {
-            padding: 0.75rem;
-        }
-
-        /* Texto más pequeño en tabla */
-        .table tbody td,
-        .table-sena-header th {
-            font-size: 0.72rem;
-            padding: 5px 4px;
-        }
-
-        /* Badges más compactos */
-        .badge-tipo {
-            padding: 2px 7px;
-            font-size: 0.68rem;
-        }
-
-        /* Botones más pequeños */
-        .btn-accion-ver {
-            padding: 3px 8px;
-            font-size: 0.70rem;
-        }
-
-        /* Columna mensaje truncada */
+        .page-title    { font-size: 1.2rem; }
+        .toolbar       { flex-direction: column; align-items: flex-start; }
+        .title-list    { text-align: left; font-size: 0.95rem; }
+        .search-wrapper{ width: 100%; box-sizing: border-box; }
+        .search-wrapper input { width: 100%; }
+        .card-sena     { padding: 0.75rem; }
+        .table tbody td, .table-sena-header th { font-size: 0.72rem; padding: 5px 4px; }
+        .badge-tipo    { padding: 2px 7px; font-size: 0.68rem; }
+        .btn-accion-ver{ padding: 3px 8px; font-size: 0.70rem; }
+        /* Permitir salto de línea en columna Mensaje */
         #tablaNotif td:nth-child(3) {
             white-space: normal !important;
             word-break: break-word;
             min-width: 100px;
         }
-
-        /* Ocultar columna Fecha en móvil para ganar espacio */
-        #tablaNotif th:nth-child(4),
-        #tablaNotif td:nth-child(4) {
-            display: none;
-        }
-
-        /* Paginación centrada */
-        .dataTables_wrapper .dataTables_paginate {
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-
-        .dataTables_wrapper .dataTables_info {
-            text-align: center;
-            font-size: 0.75rem;
-        }
+        .dataTables_wrapper .dataTables_paginate { justify-content: center; flex-wrap: wrap; }
+        .dataTables_wrapper .dataTables_info { text-align: center; font-size: 0.75rem; }
     }
 </style>
 
@@ -323,9 +125,7 @@
 
 <div class="container-fluid mt-4">
     <h4 class="page-title">Notificaciones</h4>
-
     <div class="card-sena">
-
         <div class="toolbar">
             <div></div>
             <span class="title-list">Listado de Notificaciones</span>
@@ -348,48 +148,44 @@
                 </thead>
                 <tbody>
                     {% for n in notificaciones %}
-                    <tr {% if not n.leida %}class="no-leida" {% endif %}>
+                    <tr {% if not n.leida %}class="no-leida"{% endif %}>
                         <td class="text-center fw-bold">{{ n.id_notificacion }}</td>
                         <td class="text-center">
                             {% if n.tipo == 'pqrsf' %}
-                            <span class="badge-tipo badge-pqrsf"><i class="fas fa-envelope me-1"></i>PQRSF</span>
+                                <span class="badge-tipo badge-pqrsf"><i class="fas fa-envelope me-1"></i>PQRSF</span>
                             {% elif n.tipo == 'stock' %}
-                            <span class="badge-tipo badge-stock"><i class="fas fa-box me-1"></i>Stock</span>
+                                <span class="badge-tipo badge-stock"><i class="fas fa-box me-1"></i>Stock</span>
                             {% elif n.tipo == 'carrito' %}
-                            <span class="badge-tipo" style="background:#28a745; color:white;">
-                                <i class="fas fa-shopping-bag me-1"></i>Pedido
-                            </span>
+                                <span class="badge-tipo" style="background:#28a745;color:white;">
+                                    <i class="fas fa-shopping-bag me-1"></i>Pedido
+                                </span>
                             {% else %}
-                            <span class="badge-tipo badge-sistema"><i class="fas fa-bell me-1"></i>Sistema</span>
+                                <span class="badge-tipo badge-sistema"><i class="fas fa-bell me-1"></i>Sistema</span>
                             {% endif %}
                         </td>
-                        <td style="max-width:300px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;"
-                            title="{{ n.mensaje }}">
-                            {{ n.mensaje|truncatechars:70 }}
-                        </td>
+                        <td title="{{ n.mensaje }}">{{ n.mensaje|truncatechars:70 }}</td>
                         <td class="text-center">{{ n.fechaenvio|date:"d/m/Y H:i" }}</td>
                         <td class="text-center">
                             {% if n.tipo == 'pqrsf' and n.pqrsf %}
-                            <a href="{% url 'detalle_pqrsf' n.pqrsf.id_pqrsf %}" class="btn-accion-ver">
-                                <i class="fas fa-eye"></i> Ver
-                            </a>
+                                <a href="{% url 'detalle_pqrsf' n.pqrsf.id_pqrsf %}" class="btn-accion-ver">
+                                    <i class="fas fa-eye"></i> Ver
+                                </a>
                             {% elif n.tipo == 'stock' %}
-                            <a href="{% url 'lista_productos' %}" class="btn-accion-ver" style="background:#fd7e14;">
-                                <i class="fas fa-box"></i> Ver productos
-                            </a>
+                                <a href="{% url 'lista_productos' %}" class="btn-accion-ver" style="background:#fd7e14;">
+                                    <i class="fas fa-box"></i> Ver productos
+                                </a>
                             {% elif n.tipo == 'carrito' and n.carrito %}
-                            {% if 'Gracias' in n.mensaje %}
-                            <a href="{% url 'calificar_pedido' n.carrito.id_carrito %}" class="btn-accion-ver"
-                                style="background:#f59e0b;">
-                                <i class="fas fa-star"></i> Calificar
-                            </a>
+                                {% if 'Gracias' in n.mensaje %}
+                                    <a href="{% url 'calificar_pedido' n.carrito.id_carrito %}" class="btn-accion-ver" style="background:#f59e0b;">
+                                        <i class="fas fa-star"></i> Calificar
+                                    </a>
+                                {% else %}
+                                    <a href="{% url 'detalle_pedido' n.carrito.id_carrito %}" class="btn-accion-ver" style="background:#17a2b8;">
+                                        <i class="fas fa-receipt"></i> Ver pedido
+                                    </a>
+                                {% endif %}
                             {% else %}
-                            <a href="{% url 'detalle_pedido' n.carrito.id_carrito %}" class="btn-accion-ver" style="background:#17a2b8;">
-                                <i class="fas fa-receipt"></i> Ver pedido
-                            </a>
-                            {% endif %}
-                            {% else %}
-                            <span class="text-muted" style="font-size:0.78rem;">—</span>
+                                <span class="text-muted" style="font-size:0.78rem;">—</span>
                             {% endif %}
                         </td>
                     </tr>
@@ -410,42 +206,31 @@
 <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
 
 <script>
-    $(document).ready(function () {
-        var esMobil = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent) 
-            || window.innerWidth <= 768;
+$(document).ready(function () {
 
-        var table = $('#tablaNotif').DataTable({
-            "pageLength": 10,
-            "order": [[0, "desc"]],
-            "language": {
-                "info": "Mostrando _START_ a _END_ de _TOTAL_ registros",
-                "infoEmpty": "Sin registros",
-                "paginate": { "previous": "Anterior", "next": "Siguiente" }
-            },
-            // Ocultar columna Fecha (índice 3) en móvil
+    // Detectar móvil por User-Agent (funciona en emulador y físico)
+    var esMobil = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent)
+                  || window.innerWidth <= 768;
+
+    var table = $('#tablaNotif').DataTable({
+        "pageLength": 10,
+        "order": [[0, "desc"]],
+        "language": {
+            "info": "Mostrando _START_ a _END_ de _TOTAL_ registros",
+            "infoEmpty": "Sin registros",
+            "paginate": { "previous": "Anterior", "next": "Siguiente" }
+        },
         "columnDefs": [
-            {
-                // Ocultar Fecha en móvil
-                "targets": [3],
-                "visible": !esMobil
-            },
-            {
-                // Ocultar Acciones en móvil (el tap en la fila la reemplaza)
-                "targets": [4],
-                "visible": !esMobil
-            },
-            {
-                "targets": [0],
-                "width": esMobil ? "30px" : "50px"
-            },
-            {
-                "targets": [1],
-                "width": esMobil ? "60px" : "80px"
-            },
-            {
-                "targets": [2],
-                "className": "col-mensaje"
-            }
+            // Columna # — estrecha
+            { "targets": [0], "width": esMobil ? "28px" : "50px" },
+            // Columna Tipo — fija
+            { "targets": [1], "width": esMobil ? "58px" : "80px" },
+            // Columna Mensaje — ocupa el resto
+            { "targets": [2], "width": "" },
+            // Columna Fecha — OCULTA en móvil, solo DataTables la controla
+            { "targets": [3], "visible": !esMobil },
+            // Columna Acciones — OCULTA en móvil, tap en fila la reemplaza
+            { "targets": [4], "visible": !esMobil }
         ],
         "rowCallback": function (row, data, index) {
             if ($(row).hasClass('no-leida')) {
@@ -453,32 +238,24 @@
                 $('td', row).css('font-weight', '600');
             }
         }
-        });
-
-        $('#searchNotif').on('keyup', function () {
-            table.search(this.value).draw();
-        });
-
-        // En móvil: tap en la fila navega al enlace de acciones
-        if (esMobil) {
-            // Esperar a que DataTables termine de renderizar
-            setTimeout(function () {
-                $('#tablaNotif tbody').off('click').on('click', 'tr', function () {
-                    var btn = $(this).find('a.btn-accion-ver').first();
-                    if (btn.length) {
-                        window.location.href = btn.attr('href');
-                    } else {
-                        // Si no tiene acción, resaltar brevemente la fila
-                        $(this).css('background-color', '#d4edda');
-                        setTimeout(function () {}, 300);
-                    }
-                });
-            }, 500);
-
-            // Estilo cursor pointer via CSS en móvil
-            $('<style>#tablaNotif tbody tr { cursor: pointer; } #tablaNotif tbody tr:active { background-color: #d4edda !important; }</style>')
-                .appendTo('head');
-        }
     });
+
+    // Buscador personalizado
+    $('#searchNotif').on('keyup', function () {
+        table.search(this.value).draw();
+    });
+
+    // En móvil: tap en fila ejecuta la acción (reemplaza columna Acciones)
+    if (esMobil) {
+        $('#tablaNotif tbody').on('click', 'tr', function () {
+            var enlace = $(this).find('a.btn-accion-ver').attr('href');
+            if (enlace) window.location.href = enlace;
+        });
+        // Indicar que las filas son clickeables
+        $('<style>#tablaNotif tbody tr{cursor:pointer}'
+          + '#tablaNotif tbody tr:active td{background-color:#d4edda!important}</style>')
+            .appendTo('head');
+    }
+});
 </script>
 {% endblock %}
