@@ -700,10 +700,14 @@
         var table = $('#tablaPQRSF').DataTable({
             "destroy": true,
             "pageLength": 10,
-            "pageLength": 10,
             "order": [[0, "desc"]],
+            "scrollX": true,
             "columnDefs": [
-                { "orderable": false, "targets": -1 }
+                { "orderable": false, "targets": -1 },
+                { "targets": [0], "width": "40px" },
+                { "targets": [1], "width": "80px" },
+                { "targets": [2], "width": "150px" },
+                { "targets": [3], "width": "150px" }
             ],
             "language": {
                 "info": "Mostrando _START_ a _END_ de _TOTAL_ registros",
