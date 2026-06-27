@@ -1,1 +1,1 @@
-web: gunicorn senafood.wsgi:application
+web: gunicorn senafood.wsgi:application --workers 4 --worker-class gthread --threads 2 --timeout 30
