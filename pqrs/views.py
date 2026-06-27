@@ -133,7 +133,7 @@ def crear_pqrsf_view(request):
 
         if not tipo or not descripcion:
             messages.error(request, 'Todos los campos son obligatorios.')
-            return render(request, 'pqrsf/crear.html', {
+            return render(request, 'pqrs/crear.html', {
                 'nombre_usuario': usuario.nombre,
                 'rol': rol,
                 'tipos': PQRSF.TIPO_CHOICES,
