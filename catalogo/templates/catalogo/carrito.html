@@ -122,21 +122,22 @@
                     </button>
                 </form>
 
-                <!-- Nequi -->
-                <form method="POST" action="{% url 'confirmar_pedido' %}" style="margin-bottom:10px;">
-                    {% csrf_token %}
-                    <input type="hidden" name="metodo_pago" value="nequi">
-                    <button type="submit" class="btn-pagar" style="background:#2d1b69;">
-                        <i class="fas fa-mobile-alt me-2"></i>Pagar con Nequi
-                    </button>
-                </form>
-
-                <!-- Daviplata -->
+                <!-- Pago electrónico Wompi (Nequi, Daviplata, PSE) -->
                 <form method="POST" action="{% url 'confirmar_pedido' %}" style="margin-bottom:16px;">
                     {% csrf_token %}
-                    <input type="hidden" name="metodo_pago" value="daviplata">
-                    <button type="submit" class="btn-pagar" style="background:#e40046;">
-                        <i class="fas fa-mobile-alt me-2"></i>Pagar con Daviplata
+                    <input type="hidden" name="metodo_pago" value="nequi">
+                    <button type="submit" class="btn-pagar"
+                        style="background:linear-gradient(135deg, #7b2ff7, #3b1fa8);
+                               display:flex; flex-direction:column;
+                               align-items:center; gap:4px;
+                               padding:12px 14px; height:auto;">
+                        <span style="display:flex; align-items:center; gap:8px; font-size:0.95rem;">
+                            <i class="fas fa-credit-card"></i>
+                            Pago electrónico — Wompi
+                        </span>
+                        <span style="font-size:0.72rem; opacity:0.85; font-weight:400;">
+                            Nequi · Daviplata · PSE · Tarjeta
+                        </span>
                     </button>
                 </form>
 
