@@ -29,4 +29,6 @@ urlpatterns = [
     path('calificar/<int:id_carrito>/', views.calificar_pedido, name='calificar_pedido'),
     path('calificar/guardar/<int:id_carrito>/', views.guardar_calificacion, name='guardar_calificacion'),
     path('pedido/<int:id_carrito>/', views.detalle_pedido, name='detalle_pedido'),
+    path('wompi/retorno/',  views.wompi_retorno,  name='wompi_retorno'),
+    path('wompi/webhook/',  views.wompi_webhook,  name='wompi_webhook'),
 ]
