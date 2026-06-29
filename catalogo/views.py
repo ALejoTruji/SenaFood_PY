@@ -31,13 +31,28 @@ def get_usuario(request):
 
 
 def get_carrito_activo(usuario):
-    carrito, _ = Carrito.objects.get_or_create(
+    # Si hay múltiples carritos abiertos (no debería pasar),
+    # tomar el más reciente y cerrar los demás
+    carritos = Carrito.objects.filter(
         usuario=usuario,
-        estado='abierto',
-        defaults={'total': 0}
-    )
-    return carrito
+        estado='abierto'
+    ).order_by('-create_at')
 
+    if carritos.count() > 1:
+        # Mantener solo el más reciente, marcar los demás como cancelados
+        carrito_activo = carritos.first()
+        carritos.exclude(pk=carrito_activo.pk).update(estado='cancelado')
+        return carrito_activo
+    elif carritos.count() == 1:
+        return carritos.first()
+    else:
+        # No hay carrito abierto, crear uno nuevo
+        carrito = Carrito.objects.create(
+            usuario=usuario,
+            estado='abierto',
+            total=0
+        )
+        return carrito
 
 # ─────────────────────────────────────────
 # CATÁLOGO
