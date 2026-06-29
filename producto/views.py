@@ -229,15 +229,23 @@ def desactivar_producto_view(request, id):
     })
 
 
-def eliminar_producto_view(request, id):
-    usuario, rol = get_usuario_session(request)
-    if not usuario or rol != 'Administrador':
-        return redirect('login')
+def eliminar_producto_view(request, id_producto):
+    from django.db.models import ProtectedError
+    from django.contrib import messages
 
-    producto = get_object_or_404(Producto, id_producto=id)
-    nombre = producto.nombre
-    producto.delete()
-    messages.success(request, f'Producto {nombre} eliminado correctamente.')
+    producto = get_object_or_404(Producto, pk=id_producto)
+
+    try:
+        producto.delete()
+        messages.success(request, f'Producto "{producto.nombre}" eliminado correctamente.')
+    except ProtectedError:
+        # Tiene movimientos — solo se puede desactivar
+        messages.error(
+            request,
+            f'El producto "{producto.nombre}" no se puede eliminar porque tiene '
+            f'historial de compras u órdenes. Solo puedes desactivarlo.'
+        )
+
     return redirect('lista_productos')
 
 
