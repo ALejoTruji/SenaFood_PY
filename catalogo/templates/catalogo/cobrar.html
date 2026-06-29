@@ -82,9 +82,11 @@
                     <label style="font-size:0.85rem; font-weight:600; color:#555; display:block; margin-bottom:6px;">
                         Valor recibido del cliente
                     </label>
-                    <input type="number" id="valorRecibido" placeholder="Ingresa el valor..." min="0" style="width:100%; padding:12px 16px; border:2px solid #a8d5b5;
-                            border-radius:8px; font-size:1.1rem; font-weight:600;
-                            text-align:center; outline:none; box-sizing:border-box;" oninput="calcularCambio()">
+                    <input type="number" id="valorRecibido" placeholder="Ingresa el valor..." min="0"
+                        style="width:100%; padding:12px 16px; border:2px solid #a8d5b5;
+                               border-radius:8px; font-size:1.1rem; font-weight:600;
+                               text-align:center; outline:none; box-sizing:border-box;"
+                        oninput="calcularCambio()">
                 </div>
 
                 <!-- Billetes rápidos -->
@@ -93,24 +95,30 @@
                         Billetes rápidos
                     </label>
                     <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:6px;">
-                        <button type="button" onclick="setBillete(1000)" style="background:white; border:1px solid #a8d5b5; border-radius:8px;
-                                padding:8px 4px; font-size:0.8rem; font-weight:600;
-                                color:#2e3b33; cursor:pointer;">$1.000</button>
-                        <button type="button" onclick="setBillete(2000)" style="background:white; border:1px solid #a8d5b5; border-radius:8px;
-                                padding:8px 4px; font-size:0.8rem; font-weight:600;
-                                color:#2e3b33; cursor:pointer;">$2.000</button>
-                        <button type="button" onclick="setBillete(5000)" style="background:white; border:1px solid #a8d5b5; border-radius:8px;
-                                padding:8px 4px; font-size:0.8rem; font-weight:600;
-                                color:#2e3b33; cursor:pointer;">$5.000</button>
-                        <button type="button" onclick="setBillete(10000)" style="background:white; border:1px solid #a8d5b5; border-radius:8px;
-                                padding:8px 4px; font-size:0.8rem; font-weight:600;
-                                color:#2e3b33; cursor:pointer;">$10.000</button>
-                        <button type="button" onclick="setBillete(20000)" style="background:white; border:1px solid #a8d5b5; border-radius:8px;
-                                padding:8px 4px; font-size:0.8rem; font-weight:600;
-                                color:#2e3b33; cursor:pointer;">$20.000</button>
-                        <button type="button" onclick="setBillete(50000)" style="background:white; border:1px solid #a8d5b5; border-radius:8px;
-                                padding:8px 4px; font-size:0.8rem; font-weight:600;
-                                color:#2e3b33; cursor:pointer;">$50.000</button>
+                        <button type="button" onclick="setBillete(1000)"
+                            style="background:white; border:1px solid #a8d5b5; border-radius:8px;
+                                   padding:8px 4px; font-size:0.8rem; font-weight:600;
+                                   color:#2e3b33; cursor:pointer;">$1.000</button>
+                        <button type="button" onclick="setBillete(2000)"
+                            style="background:white; border:1px solid #a8d5b5; border-radius:8px;
+                                   padding:8px 4px; font-size:0.8rem; font-weight:600;
+                                   color:#2e3b33; cursor:pointer;">$2.000</button>
+                        <button type="button" onclick="setBillete(5000)"
+                            style="background:white; border:1px solid #a8d5b5; border-radius:8px;
+                                   padding:8px 4px; font-size:0.8rem; font-weight:600;
+                                   color:#2e3b33; cursor:pointer;">$5.000</button>
+                        <button type="button" onclick="setBillete(10000)"
+                            style="background:white; border:1px solid #a8d5b5; border-radius:8px;
+                                   padding:8px 4px; font-size:0.8rem; font-weight:600;
+                                   color:#2e3b33; cursor:pointer;">$10.000</button>
+                        <button type="button" onclick="setBillete(20000)"
+                            style="background:white; border:1px solid #a8d5b5; border-radius:8px;
+                                   padding:8px 4px; font-size:0.8rem; font-weight:600;
+                                   color:#2e3b33; cursor:pointer;">$20.000</button>
+                        <button type="button" onclick="setBillete(50000)"
+                            style="background:white; border:1px solid #a8d5b5; border-radius:8px;
+                                   padding:8px 4px; font-size:0.8rem; font-weight:600;
+                                   color:#2e3b33; cursor:pointer;">$50.000</button>
                     </div>
                 </div>
 
@@ -119,33 +127,40 @@
                     <label style="font-size:0.85rem; font-weight:600; color:#555; display:block; margin-bottom:6px;">
                         Cambio a devolver
                     </label>
-                    <div id="cambioValor" style="border-radius:8px; padding:14px 16px; font-size:1.4rem;
-                            font-weight:700; text-align:center;">
+                    <div id="cambioValor"
+                        style="border-radius:8px; padding:14px 16px; font-size:1.4rem;
+                               font-weight:700; text-align:center;">
                     </div>
                 </div>
 
-                <div id="errorBox" style="display:none; background:#fdecea; color:#dc3545;
-                                    border-radius:8px; padding:10px 14px; font-size:0.85rem;
-                                    margin-bottom:16px; text-align:center;">
+                <div id="errorBox"
+                    style="display:none; background:#fdecea; color:#dc3545;
+                           border-radius:8px; padding:10px 14px; font-size:0.85rem;
+                           margin-bottom:16px; text-align:center;">
                     <i class="fas fa-exclamation-triangle me-1"></i>
                     El valor recibido es menor al total
                 </div>
 
-                <a href="{% url 'cobrar_nequi' carrito.id_carrito %}" style="background:#2d1b69; color:white; border:none; padding:14px;
-                    border-radius:20px; font-size:1rem; font-weight:600;
-                    cursor:pointer; width:100%; display:flex; align-items:center;
-                    justify-content:center; gap:8px; text-decoration:none;
-                    margin-bottom:10px;">
-                    <i class="fas fa-mobile-alt"></i> Cobrar con Nequi
+                <!-- Botón Wompi -->
+                <a href="{% url 'cobrar_nequi' carrito.id_carrito %}"
+                    style="background:linear-gradient(135deg,#7b2ff7,#3b1fa8); color:white;
+                           border:none; padding:14px 16px; border-radius:20px;
+                           font-size:1rem; font-weight:600; cursor:pointer; width:100%;
+                           display:flex; align-items:center; justify-content:center;
+                           gap:8px; text-decoration:none; margin-bottom:10px;
+                           box-sizing:border-box; height:52px;">
+                    <i class="fas fa-credit-card"></i> Cobrar con Wompi
                 </a>
 
-                <!-- Botón registrar pago -->
+                <!-- Botón efectivo -->
                 <form method="POST" action="{% url 'registrar_pago' carrito.id_carrito %}">
                     {% csrf_token %}
-                    <button type="submit" id="btnPagar" disabled style="background:#ccc; color:white; border:none; padding:14px;
-                            border-radius:20px; font-size:1rem; font-weight:600;
-                            cursor:not-allowed; width:100%; transition:all 0.2s;
-                            display:flex; align-items:center; justify-content:center; gap:8px;">
+                    <button type="submit" id="btnPagar" disabled
+                        style="background:#ccc; color:white; border:none; padding:14px 16px;
+                               border-radius:20px; font-size:1rem; font-weight:600;
+                               cursor:not-allowed; width:100%; transition:all 0.2s;
+                               display:flex; align-items:center; justify-content:center;
+                               gap:8px; box-sizing:border-box; height:52px;">
                         <i class="fas fa-check-circle"></i> Registrar pago en efectivo
                     </button>
                 </form>
@@ -160,44 +175,44 @@
 
     function calcularCambio() {
         const recibido = parseFloat(document.getElementById('valorRecibido').value) || 0;
-        const cambioBox = document.getElementById('cambioBox');
+        const cambioBox   = document.getElementById('cambioBox');
         const cambioValor = document.getElementById('cambioValor');
-        const errorBox = document.getElementById('errorBox');
-        const btnPagar = document.getElementById('btnPagar');
+        const errorBox    = document.getElementById('errorBox');
+        const btnPagar    = document.getElementById('btnPagar');
 
         if (recibido <= 0) {
             cambioBox.style.display = 'none';
-            errorBox.style.display = 'none';
-            btnPagar.disabled = true;
+            errorBox.style.display  = 'none';
+            btnPagar.disabled       = true;
             btnPagar.style.background = '#ccc';
-            btnPagar.style.cursor = 'not-allowed';
+            btnPagar.style.cursor   = 'not-allowed';
             return;
         }
 
         if (recibido < total) {
             cambioBox.style.display = 'none';
-            errorBox.style.display = 'block';
-            btnPagar.disabled = true;
+            errorBox.style.display  = 'block';
+            btnPagar.disabled       = true;
             btnPagar.style.background = '#ccc';
-            btnPagar.style.cursor = 'not-allowed';
+            btnPagar.style.cursor   = 'not-allowed';
         } else {
             const cambio = recibido - total;
             cambioBox.style.display = 'block';
-            errorBox.style.display = 'none';
+            errorBox.style.display  = 'none';
 
             if (cambio === 0) {
                 cambioValor.style.background = '#e9f7ef';
-                cambioValor.style.color = '#28a745';
-                cambioValor.textContent = 'Pago exacto ✓';
+                cambioValor.style.color      = '#28a745';
+                cambioValor.textContent      = 'Pago exacto ✓';
             } else {
                 cambioValor.style.background = '#fff3e0';
-                cambioValor.style.color = '#fd7e14';
-                cambioValor.textContent = '$' + cambio.toLocaleString();
+                cambioValor.style.color      = '#fd7e14';
+                cambioValor.textContent      = '$' + cambio.toLocaleString();
             }
 
-            btnPagar.disabled = false;
+            btnPagar.disabled         = false;
             btnPagar.style.background = '#28a745';
-            btnPagar.style.cursor = 'pointer';
+            btnPagar.style.cursor     = 'pointer';
         }
     }
 
