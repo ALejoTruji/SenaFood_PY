@@ -908,12 +908,18 @@ def cobrar_nequi(request, id_carrito):
     ).select_related('id_producto')
 
     valor      = int(carrito.total or 0)
-    nequi_link = f'https://recarga.nequi.com.co/bdigital/renta/qr?phoneNumber=3108995990&amount={valor}'
 
+    # Link de Wompi — en producción cambiar test_VPOS_ictMqt por el ID real
+    wompi_link = os.environ.get(
+        'WOMPI_LINK',
+        'https://checkout.wompi.co/l/test_VPOS_ictMqt'
+    )
+
+    # Generar QR del link de Wompi
     qr = qrcode.QRCode(version=1, box_size=8, border=2)
-    qr.add_data(nequi_link)
+    qr.add_data(wompi_link)
     qr.make(fit=True)
-    img    = qr.make_image(fill_color='#2d1b69', back_color='white')
+    img    = qr.make_image(fill_color='#7b2ff7', back_color='white')
     buffer = BytesIO()
     img.save(buffer, format='PNG')
     qr_base64 = base64.b64encode(buffer.getvalue()).decode()
@@ -921,7 +927,7 @@ def cobrar_nequi(request, id_carrito):
     return render(request, 'catalogo/cobrar_nequi.html', {
         'carrito':        carrito,
         'detalles':       detalles,
-        'nequi_link':     nequi_link,
+        'wompi_link':     wompi_link,
         'qr_base64':      qr_base64,
         'valor':          valor,
         'nombre_usuario': request.session.get('usuario_nombre', ''),
