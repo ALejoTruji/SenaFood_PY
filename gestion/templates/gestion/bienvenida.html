@@ -11,11 +11,7 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         html, body {
             font-family: 'Poppins', sans-serif;
@@ -24,34 +20,107 @@
             flex-direction: column;
         }
 
-        .hero {
+        /* ── SLIDER ─────────────────────────────────────── */
+        .hero-slider {
             position: relative;
             flex: 1.2;
-            background: url("{% static 'gestion/img/hero.png' %}") center center / contain no-repeat;
-            background-color: #1a3a1a;
-            display: flex;
-            align-items: flex-start;
-            justify-content: flex-end;
-            padding: 1.5rem;
+            min-height: 340px;
+            overflow: hidden;
+            margin-top: 70px;
         }
 
-        .hero::after {
+        .slide {
+            position: absolute;
+            inset: 0;
+            background-size: cover;
+            background-position: center;
+            opacity: 0;
+            transition: opacity 0.9s ease-in-out;
+        }
+
+        .slide.active { opacity: 1; }
+
+        .slide::after {
             content: '';
             position: absolute;
             inset: 0;
-            background: linear-gradient(to bottom, rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.45));
+            background: linear-gradient(to bottom,
+                rgba(0,0,0,0.10) 0%,
+                rgba(0,0,0,0.50) 100%);
         }
 
-        .hero-logo {
-            position: relative;
-            z-index: 2;
-            width: 200px;
-            height: 200px;
-            object-fit: contain;
-            filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.4));
-            mix-blend-mode: screen;
+        /* Texto sobre el slider */
+        .slide-caption {
+            position: absolute;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 3;
+            text-align: center;
+            color: white;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.6);
+            white-space: nowrap;
         }
 
+        .slide-caption span {
+            font-size: 1.1rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            background: rgba(40,167,69,0.75);
+            padding: 4px 18px;
+            border-radius: 20px;
+        }
+
+        /* Puntos indicadores */
+        .slider-dots {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 4;
+            display: flex;
+            gap: 8px;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.5);
+            cursor: pointer;
+            transition: background 0.3s, transform 0.3s;
+        }
+
+        .dot.active {
+            background: white;
+            transform: scale(1.3);
+        }
+
+        /* Flechas de navegación */
+        .slider-arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 4;
+            background: rgba(0,0,0,0.35);
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+
+        .slider-arrow:hover { background: rgba(40,167,69,0.8); }
+        .slider-arrow.prev { left: 14px; }
+        .slider-arrow.next { right: 14px; }
+
+        /* ── PARTE INFERIOR ─────────────────────────────── */
         .bottom {
             flex: 1;
             background: linear-gradient(135deg, #a8d5b5 0%, #d4edda 50%, #f0fff4 100%);
@@ -59,74 +128,16 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 1.5rem 2rem;
+            padding: 1.8rem 2rem;
             text-align: center;
-            gap: 0.3rem;
+            gap: 0.4rem;
         }
 
-        .bottom h1 {
-            font-size: 2rem;
-            font-weight: 800;
-            color: #1a1a1a;
-            margin-bottom: 0.3rem;
-        }
-
-        .bottom h1 span {
-            color: #28a745;
-        }
-
-        .bottom p {
-            font-size: 0.95rem;
-            color: #666;
-            margin-bottom: 1rem;
-            max-width: 400px;
-        }
-
-        .btn-group {
-            display: flex;
-            gap: 1rem;
-        }
-
-        .btn-ingresar {
-            background-color: #28a745;
-            color: white;
-            border: none;
-            padding: 10px 36px;
-            border-radius: 25px;
-            font-size: 0.95rem;
-            font-weight: 600;
-            text-decoration: none;
-            transition: background 0.2s, transform 0.1s;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .btn-ingresar:hover {
-            background-color: #218838;
-            color: white;
-            transform: translateY(-1px);
-        }
-
-        .btn-registrar {
-            background-color: white;
-            color: #28a745;
-            border: 2px solid #28a745;
-            padding: 10px 36px;
-            border-radius: 25px;
-            font-size: 0.95rem;
-            font-weight: 600;
-            text-decoration: none;
-            transition: all 0.2s;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .btn-registrar:hover {
-            background-color: #28a745;
-            color: white;
-            transform: translateY(-1px);
+        .bottom img {
+            width: 130px;
+            height: 130px;
+            object-fit: contain;
+            margin-bottom: -0.5rem;
         }
 
         .divider {
@@ -134,50 +145,77 @@
             height: 4px;
             background: #28a745;
             border-radius: 2px;
-            margin: 0 auto 0.8rem;
+            margin: 0.6rem auto;
         }
 
+        .bottom h1 {
+            font-size: 1.9rem;
+            font-weight: 800;
+            color: #1a1a1a;
+            margin-bottom: 0.3rem;
+        }
+
+        .bottom h1 span { color: #28a745; }
+
+        .bottom p {
+            font-size: 0.95rem;
+            color: #555;
+            max-width: 400px;
+            margin-bottom: 1rem;
+        }
+
+        .btn-group { display: flex; gap: 1rem; }
+
+        .btn-ingresar {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 11px 38px;
+            border-radius: 25px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: background 0.2s, transform 0.1s;
+        }
+
+        .btn-ingresar:hover {
+            background: #218838;
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        .btn-registrar {
+            background: white;
+            color: #28a745;
+            border: 2px solid #28a745;
+            padding: 11px 38px;
+            border-radius: 25px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+
+        .btn-registrar:hover {
+            background: #28a745;
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        /* ── RESPONSIVE ─────────────────────────────────── */
         @media (max-width: 768px) {
-            .hero {
-                flex: none;
-                min-height: 220px;
-                padding: 1rem;
-                background-size: contain;
-            }
-
-            .hero-logo {
-                width: 120px;
-                height: 120px;
-            }
-
-            .bottom {
-                flex: none;
-                padding: 2rem 1.25rem;
-            }
-
-            .bottom img {
-                width: 140px !important;
-                height: 140px !important;
-                margin-bottom: -1rem !important;
-            }
-
-            .bottom h1 {
-                font-size: 1.5rem;
-            }
-
-            .bottom p {
-                font-size: 0.9rem;
-                max-width: 90%;
-            }
-
-            .btn-group {
-                flex-direction: column;
-                width: 100%;
-                gap: 0.75rem;
-            }
-
-            .btn-ingresar,
-            .btn-registrar {
+            .hero-slider { min-height: 220px; }
+            .slide-caption span { font-size: 0.85rem; }
+            .bottom img { width: 100px; height: 100px; }
+            .bottom h1 { font-size: 1.4rem; }
+            .btn-group { flex-direction: column; width: 100%; }
+            .btn-ingresar, .btn-registrar {
                 width: 100%;
                 justify-content: center;
                 padding: 12px 24px;
@@ -185,46 +223,118 @@
         }
 
         @media (max-width: 480px) {
-            .hero {
-                min-height: 180px;
-            }
-
-            .hero-logo {
-                width: 90px;
-                height: 90px;
-            }
-
-            .bottom h1 {
-                font-size: 1.25rem;
-            }
+            .hero-slider { min-height: 170px; }
+            .slider-arrow { display: none; }
         }
     </style>
 </head>
 
 <body>
     {% include 'gestion/navbar_publico.html' %}
-    <!-- Hero con imagen -->
-    <div class="hero" style="margin-top: 64px;">
-        <img src="{% static 'gestion/img/logo.png' %}" alt="SenaFOOD" class="hero-logo">
+
+    <!-- ── SLIDER DE IMÁGENES ── -->
+    <div class="hero-slider" id="heroSlider">
+
+        <div class="slide active"
+             style="background-image:url('{% static 'gestion/img/almuerzo.png' %}')">
+            <div class="slide-caption"><span>🍱 Almuerzos del día</span></div>
+        </div>
+
+        <div class="slide"
+             style="background-image:url('{% static 'gestion/img/cafepan.png' %}')">
+            <div class="slide-caption"><span>☕ Café y pan</span></div>
+        </div>
+
+        <div class="slide"
+             style="background-image:url('{% static 'gestion/img/chips.png' %}')">
+            <div class="slide-caption"><span>🍟 Snacks y chips</span></div>
+        </div>
+
+        <div class="slide"
+             style="background-image:url('{% static 'gestion/img/empanada.png' %}')">
+            <div class="slide-caption"><span>🥟 Empanadas</span></div>
+        </div>
+
+        <div class="slide"
+             style="background-image:url('{% static 'gestion/img/gaseosas.png' %}')">
+            <div class="slide-caption"><span>🥤 Bebidas y gaseosas</span></div>
+        </div>
+
+        <!-- Flechas -->
+        <button class="slider-arrow prev" onclick="cambiarSlide(-1)">
+            <i class="fas fa-chevron-left"></i>
+        </button>
+        <button class="slider-arrow next" onclick="cambiarSlide(1)">
+            <i class="fas fa-chevron-right"></i>
+        </button>
+
+        <!-- Puntos indicadores -->
+        <div class="slider-dots">
+            <div class="dot active" onclick="irASlide(0)"></div>
+            <div class="dot" onclick="irASlide(1)"></div>
+            <div class="dot" onclick="irASlide(2)"></div>
+            <div class="dot" onclick="irASlide(3)"></div>
+            <div class="dot" onclick="irASlide(4)"></div>
+        </div>
     </div>
 
-    <!-- Contenido inferior -->
+    <!-- ── CONTENIDO INFERIOR ── -->
     <div class="bottom">
-        <img src="{% static 'gestion/img/logo.png' %}" alt="SenaFOOD"
-            style="width:200px; height:200px; object-fit:contain; margin-bottom:-2rem;">
+        <img src="{% static 'gestion/img/logo.png' %}" alt="SenaFOOD">
         <div class="divider"></div>
-        <h1><span>¡Bienvenido a SenaFOOD</span></h1>
+        <h1><span>¡Bienvenido a SenaFOOD!</span></h1>
         <p>Explora la variedad y el sabor optimizando tu tiempo.</p>
         <div class="btn-group">
             <a href="{% url 'login' %}" class="btn-ingresar">
-                <i></i> Ingresar
+                <i class="fas fa-sign-in-alt"></i> Ingresar
             </a>
             <a href="{% url 'registro' %}" class="btn-registrar">
-                <i></i> Registrar
+                <i class="fas fa-user-plus"></i> Registrar
             </a>
         </div>
     </div>
 
-</body>
+    <script>
+        let slideActual = 0;
+        const slides = document.querySelectorAll('.slide');
+        const dots   = document.querySelectorAll('.dot');
+        let intervalo;
 
+        function mostrarSlide(n) {
+            slides[slideActual].classList.remove('active');
+            dots[slideActual].classList.remove('active');
+            slideActual = (n + slides.length) % slides.length;
+            slides[slideActual].classList.add('active');
+            dots[slideActual].classList.add('active');
+        }
+
+        function cambiarSlide(dir) {
+            mostrarSlide(slideActual + dir);
+            reiniciarIntervalo();
+        }
+
+        function irASlide(n) {
+            mostrarSlide(n);
+            reiniciarIntervalo();
+        }
+
+        function reiniciarIntervalo() {
+            clearInterval(intervalo);
+            intervalo = setInterval(() => mostrarSlide(slideActual + 1), 4000);
+        }
+
+        // Arrancar automático cada 4 segundos
+        intervalo = setInterval(() => mostrarSlide(slideActual + 1), 4000);
+
+        // Swipe en móvil
+        let touchStartX = 0;
+        document.getElementById('heroSlider').addEventListener('touchstart', e => {
+            touchStartX = e.touches[0].clientX;
+        });
+        document.getElementById('heroSlider').addEventListener('touchend', e => {
+            const diff = touchStartX - e.changedTouches[0].clientX;
+            if (Math.abs(diff) > 40) cambiarSlide(diff > 0 ? 1 : -1);
+        });
+    </script>
+</body>
 </html>
