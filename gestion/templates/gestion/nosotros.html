@@ -1,0 +1,356 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SenaFOOD - Nosotros</title>
+    <link rel="stylesheet" href="{% static 'gestion/css/styles.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(160deg, #c8e6c9 0%, #e8f5e9 40%, #f9fff9 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .nosotros-wrapper {
+            flex: 1;
+            padding: 40px 20px 0;
+        }
+
+        .nosotros-inner {
+            max-width: 960px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 28px;
+        }
+
+        /* ── ENCABEZADO ── */
+        .nosotros-header {
+            text-align: center;
+            padding: 36px 20px 28px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+            border-top: 5px solid #28a745;
+        }
+
+        .nosotros-header img {
+            width: 90px;
+            height: 90px;
+            object-fit: contain;
+            margin-bottom: 12px;
+        }
+
+        .nosotros-header h1 {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #1a1a1a;
+            margin-bottom: 6px;
+        }
+
+        .nosotros-header h1 span { color: #28a745; }
+
+        .nosotros-header p {
+            color: #666;
+            font-size: 0.95rem;
+            max-width: 520px;
+            margin: 0 auto;
+        }
+
+        /* ── MISIÓN Y VISIÓN ── */
+        .mv-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .mv-card {
+            background: white;
+            border-radius: 16px;
+            padding: 32px 28px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+            border-top: 5px solid #28a745;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .mv-card.vision {
+            border-top-color: #e0ac23;
+        }
+
+        .mv-icon {
+            width: 52px;
+            height: 52px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+        }
+
+        .mv-card .mv-icon { background: #e8f5e9; color: #28a745; }
+        .mv-card.vision .mv-icon { background: #fef8e7; color: #e0ac23; }
+
+        .mv-card h2 {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: #1a1a1a;
+        }
+
+        .mv-card p {
+            color: #555;
+            font-size: 0.9rem;
+            line-height: 1.7;
+        }
+
+        /* ── VALORES ── */
+        .valores-card {
+            background: white;
+            border-radius: 16px;
+            padding: 32px 28px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+            border-top: 5px solid #28a745;
+        }
+
+        .valores-card h2 {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: #1a1a1a;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .valores-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+        }
+
+        .valor-item {
+            background: #f0fff4;
+            border-radius: 12px;
+            padding: 18px 14px;
+            text-align: center;
+            border: 1px solid #d4edda;
+        }
+
+        .valor-item i {
+            font-size: 1.5rem;
+            color: #28a745;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .valor-item span {
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: #2e3b33;
+        }
+
+        /* ── REDES SOCIALES ── */
+        .redes-card {
+            background: linear-gradient(160deg, #28a745, #1a5c2a);
+            border-radius: 16px;
+            padding: 36px 28px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.10);
+            text-align: center;
+            color: white;
+        }
+
+        .redes-card h2 {
+            font-size: 1.2rem;
+            font-weight: 800;
+            margin-bottom: 6px;
+        }
+
+        .redes-card p {
+            color: #c8f7d0;
+            font-size: 0.88rem;
+            margin-bottom: 24px;
+        }
+
+        .redes-links {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .red-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            color: white;
+            transition: transform 0.2s;
+        }
+
+        .red-item:hover { transform: translateY(-4px); color: white; }
+
+        .red-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            background: rgba(255,255,255,0.15);
+            transition: background 0.2s;
+        }
+
+        .red-item:hover .red-icon { background: rgba(255,255,255,0.28); }
+
+        .red-item span {
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: #c8f7d0;
+        }
+
+        /* ── FOOTER ATECH ── */
+        .footer-atech {
+            margin-top: 28px;
+            background: #1a2e1a;
+            padding: 28px 20px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .footer-atech img {
+            height: 48px;
+            object-fit: contain;
+            opacity: 0.9;
+        }
+
+        .footer-atech p {
+            color: #a8d5b5;
+            font-size: 0.82rem;
+        }
+
+        .footer-atech .copy {
+            color: #6c9e78;
+            font-size: 0.75rem;
+        }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 700px) {
+            .mv-grid { grid-template-columns: 1fr; }
+            .valores-grid { grid-template-columns: repeat(2, 1fr); }
+            .nosotros-header h1 { font-size: 1.5rem; }
+        }
+
+        @media (max-width: 420px) {
+            .valores-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body class="public-page-body">
+
+    {% include 'gestion/navbar_publico.html' %}
+
+    <div class="nosotros-wrapper">
+        <div class="nosotros-inner">
+
+            <!-- Encabezado -->
+            <div class="nosotros-header">
+                <img src="{% static 'gestion/img/logo.png' %}" alt="SenaFOOD">
+                <h1>Sobre <span>SenaFOOD</span></h1>
+                <p>Somos el servicio de alimentación institucional del Centro de Servicios Financieros del SENA, comprometidos con la calidad, la variedad y el bienestar de nuestra comunidad.</p>
+            </div>
+
+            <!-- Misión y Visión -->
+            <div class="mv-grid">
+                <div class="mv-card">
+                    <div class="mv-icon"><i class="fas fa-bullseye"></i></div>
+                    <h2>Nuestra Misión</h2>
+                    <p>Brindar a los aprendices, instructores y funcionarios del Centro de Servicios Financieros del SENA una experiencia de alimentación de calidad, variada y accesible, a través de un servicio ágil, tecnológico y centrado en el bienestar de la comunidad educativa.</p>
+                </div>
+
+                <div class="mv-card vision">
+                    <div class="mv-icon"><i class="fas fa-eye"></i></div>
+                    <h2>Nuestra Visión</h2>
+                    <p>Ser reconocidos como el servicio de alimentación institucional más innovador y eficiente del SENA a nivel nacional, integrando tecnología, sostenibilidad y excelencia en el servicio para mejorar la calidad de vida de nuestra comunidad educativa.</p>
+                </div>
+            </div>
+
+            <!-- Valores -->
+            <div class="valores-card">
+                <h2>Nuestros Valores</h2>
+                <div class="valores-grid">
+                    <div class="valor-item">
+                        <i class="fas fa-heart"></i>
+                        <span>Compromiso</span>
+                    </div>
+                    <div class="valor-item">
+                        <i class="fas fa-star"></i>
+                        <span>Calidad</span>
+                    </div>
+                    <div class="valor-item">
+                        <i class="fas fa-users"></i>
+                        <span>Comunidad</span>
+                    </div>
+                    <div class="valor-item">
+                        <i class="fas fa-leaf"></i>
+                        <span>Sostenibilidad</span>
+                    </div>
+                    <div class="valor-item">
+                        <i class="fas fa-lightbulb"></i>
+                        <span>Innovación</span>
+                    </div>
+                    <div class="valor-item">
+                        <i class="fas fa-handshake"></i>
+                        <span>Respeto</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Redes sociales -->
+            <div class="redes-card">
+                <h2>Síguenos en redes sociales</h2>
+                <p>Entérate de nuestras novedades, menús del día y promociones especiales.</p>
+                <div class="redes-links">
+                    <a href="https://www.facebook.com/share/1CVWn9uh2K/" target="_blank" class="red-item">
+                        <div class="red-icon"><i class="fab fa-facebook-f"></i></div>
+                        <span>Facebook</span>
+                    </a>
+                    <a href="https://serviciosfinancierosena.blogspot.com/" target="_blank" class="red-item">
+                        <div class="red-icon"><i class="fas fa-blog"></i></div>
+                        <span>Blog SENA</span>
+                    </a>
+                    <a href="mailto:senafoodcdsf@gmail.com" class="red-item">
+                        <div class="red-icon"><i class="fas fa-envelope"></i></div>
+                        <span>Correo</span>
+                    </a>
+                    <a href="{% url 'contacto' %}" class="red-item">
+                        <div class="red-icon"><i class="fas fa-paper-plane"></i></div>
+                        <span>Contáctanos</span>
+                    </a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Footer Atech -->
+    <footer class="footer-atech">
+        <img src="{% static 'gestion/img/atechtransparente.png' %}" alt="Atech Company">
+        <p>Desarrollado con ❤️ por <strong style="color:white;">Atech Company</strong></p>
+        <p class="copy">© {% now "Y" %} SenaFOOD — Centro de Servicios Financieros SENA. Todos los derechos reservados.</p>
+    </footer>
+
+</body>
+</html>

@@ -489,5 +489,8 @@ def toggle_tienda_view(request):
         config.save()
 
     return redirect('catalogo')
+
+def nosotros_view(request):
+    return render(request, 'gestion/nosotros.html')
     
 
