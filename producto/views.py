@@ -229,17 +229,16 @@ def desactivar_producto_view(request, id):
     })
 
 
-def eliminar_producto_view(request, id_producto):
+def eliminar_producto_view(request, id):
     from django.db.models import ProtectedError
     from django.contrib import messages
 
-    producto = get_object_or_404(Producto, pk=id_producto)
+    producto = get_object_or_404(Producto, pk=id)
 
     try:
         producto.delete()
         messages.success(request, f'Producto "{producto.nombre}" eliminado correctamente.')
     except ProtectedError:
-        # Tiene movimientos — solo se puede desactivar
         messages.error(
             request,
             f'El producto "{producto.nombre}" no se puede eliminar porque tiene '
