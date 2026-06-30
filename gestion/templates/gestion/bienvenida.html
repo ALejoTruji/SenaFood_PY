@@ -27,13 +27,15 @@
             min-height: 340px;
             overflow: hidden;
             margin-top: 70px;
+            background: linear-gradient(135deg, #2d2d2d 0%, #4a4a4a 50%, #2d2d2d 100%);
         }
 
         .slide {
             position: absolute;
             inset: 0;
-            background-size: cover;
+            background-size: contain;
             background-position: center;
+            background-repeat: no-repeat;
             opacity: 0;
             transition: opacity 0.9s ease-in-out;
         }
