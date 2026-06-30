@@ -367,9 +367,8 @@ NAVBAR PÚBLICO
 .public-navbar__inner {
     max-width: 100%;
     margin: 0;
-    padding: 0 32px;
     padding: 0 24px;
-    height: 64px;
+    height: 70px;
     display: flex;
     align-items: center;
     gap: 24px;
@@ -384,8 +383,8 @@ NAVBAR PÚBLICO
 }
 
 .public-navbar__logo {
-    width: 40px;
-    height: 40px;
+    width: 54px;
+    height: 54px;
     object-fit: contain;
     border-radius: 6px;
 }
