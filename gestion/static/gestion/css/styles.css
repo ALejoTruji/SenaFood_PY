@@ -33,16 +33,19 @@ body {
 }
 
 .nav-logo {
-    height: 40px;
-    width: auto;
+    width: 52px;
+    height: 52px;
+    border-radius: 8px;
     object-fit: contain;
-    display: block;
+    background: transparent;
 }
 
-.logo-area {
+.logo-area { 
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
+    text-decoration: none;
+    min-width: 180px;
 }
 
 .brand-name {
